@@ -9,6 +9,8 @@ const { createEvent } = require('./services/events-api')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 function run() {
+	bot.command('test', async ctx => await ctx.reply('Бот працює'))
+
 	bot.on('text', async ctx => await handlers.handleText(ctx))
 
 	bot.action(constants.PLUS, async ctx => await handlers.handlePlus(ctx))
@@ -26,7 +28,7 @@ function run() {
 
 run()
 
-bot.launch()
+// bot.launch()
 
 // Enable graceful stop
 // process.once('SIGINT', () => bot.stop('SIGINT'))
