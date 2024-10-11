@@ -5,24 +5,24 @@ module.exports = async function checkRegistrationTime(ctx, event) {
 	const { registrationStart, registrationEnd } = event
 
 	if (registrationStart) {
-		const now = new Date()
+		const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+		const now = new Date(formatDate(nowLocaleString))
+		const start = new Date(formatDate(registrationStart))
 
-		const registrationStartDate = new Date(formatDate(registrationStart))
-
-		if (now < registrationStartDate) {
+		if (now < start) {
 			await ctx.replyWithHTML(
 				`<b>${getFullName(ctx)}</b>, реєстрація ще не розпочалася. Вона розпочнеться ${registrationStart}.`
 			)
 			return false
 		}
 	}
-	
+
 	if (registrationEnd) {
-		const now = new Date()
+		const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+		const now = new Date(formatDate(nowLocaleString))
+		const end = new Date(formatDate(registrationEnd))
 
-		const registrationEndDate = new Date(formatDate(registrationEnd))
-
-		if (now > registrationEndDate) {
+		if (now > end) {
 			await ctx.replyWithHTML(`<b>${getFullName(ctx)}</b>, реєстрація вже закінчилася.`)
 			return false
 		}
