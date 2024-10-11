@@ -6,8 +6,8 @@ module.exports = function getHeader(updatedEvent) {
 <b>${title}</b>
 Початок: ${start}${end ? `\nКінець: ${end}` : ''}${
 		registrationStart ? `\nПочаток реєстрації: ${registrationStart}` : ''
-	}${registrationEnd ? `\nКінець реєстрації: ${registrationEnd}` : ''}${
-		reserveDeadline ? `\nРезерв до: ${reserveDeadline}` : ''
+	}${reserveDeadline ? `\nРезерв до: ${reserveDeadline}` : ''}${
+		registrationEnd ? `\nКінець реєстрації: ${registrationEnd}` : ''
 	}${participantsMin ? `\nМінімум учасників: ${participantsMin}` : ''}${
 		participantsMax ? `\nМаксимум учасників: ${participantsMax}` : ''
 	}`

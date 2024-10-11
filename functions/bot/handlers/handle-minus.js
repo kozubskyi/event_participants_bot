@@ -7,6 +7,7 @@ const deleteMessage = require('../helpers/delete-message')
 const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
 const { MINUS, MINUS_FRIEND } = require('../helpers/constants')
+const sendReply = require('../helpers/send-reply')
 // const handleError = require('./handle-error')
 
 module.exports = async function handleMinus(ctx) {
@@ -95,15 +96,17 @@ module.exports = async function handleMinus(ctx) {
 				}
 			})
 
-		const reply = `
-${getHeader(updatedEvent)}
+		await sendReply(ctx, updatedEvent, { top, reserve, refused })
 
-${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-			refused.length ? refused.join('\n') : ''
-		}
-`
+		// 		const reply = `
+		// ${getHeader(updatedEvent)}
 
-		await ctx.replyWithHTML(reply, KEYBOARD)
+		// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
+		// 			refused.length ? refused.join('\n') : ''
+		// 		}
+		// `
+
+		// 		await ctx.replyWithHTML(reply, KEYBOARD)
 	} catch (err) {
 		console.log({ err })
 	}

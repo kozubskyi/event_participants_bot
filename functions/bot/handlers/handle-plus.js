@@ -7,6 +7,7 @@ const deleteMessage = require('../helpers/delete-message')
 const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
 const { PLUS, PLUS_FRIEND } = require('../helpers/constants')
+const sendReply = require('../helpers/send-reply')
 // const handleError = require('./handle-error')
 
 module.exports = async function handlePlus(ctx) {
@@ -105,15 +106,17 @@ module.exports = async function handlePlus(ctx) {
 		const reserve = notMinusParticipants.slice(participantsMax ?? notMinusParticipants.length)
 		const refused = participants.filter(p => p[p.length - 1] === '-')
 
-		const reply = `
-${getHeader(updatedEvent)}
+		await sendReply(ctx, updatedEvent, { top, reserve, refused })
 
-${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-			refused.length ? refused.join('\n') : ''
-		}
-`
+		// 		const reply = `
+		// ${getHeader(updatedEvent)}
 
-		await ctx.replyWithHTML(reply, KEYBOARD)
+		// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
+		// 			refused.length ? refused.join('\n') : ''
+		// 		}
+		// `
+
+		// 		await ctx.replyWithHTML(reply, KEYBOARD)
 	} catch (err) {
 		console.log({ err })
 	}

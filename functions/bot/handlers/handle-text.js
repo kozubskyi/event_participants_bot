@@ -3,6 +3,8 @@ const { createEvent, getEvent, updateEvent } = require('../services/events-api')
 const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
 const formatDate = require('../helpers/format-date')
+const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
+const sendReply = require('../helpers/send-reply')
 // const handleError = require('./handle-error')
 
 module.exports = async function handleText(ctx) {
@@ -31,9 +33,8 @@ module.exports = async function handleText(ctx) {
 
 		const createdEvent = await createEvent(event)
 
-		let reply = `${getHeader(createdEvent)}`
-
-		await ctx.replyWithHTML(reply, KEYBOARD)
+		await ctx.replyWithHTML(getHeader(createdEvent), KEYBOARD)
+		await sendInfoMessageToCreator(ctx)
 
 		if (!reserveDeadline) return
 
@@ -41,6 +42,8 @@ module.exports = async function handleText(ctx) {
 		const now = new Date(formatDate(nowLocaleString))
 		const deadline = new Date(formatDate(reserveDeadline))
 		const delay = deadline - now
+
+		// console.log({ delay })
 
 		if (delay <= 0) return
 
@@ -75,15 +78,17 @@ module.exports = async function handleText(ctx) {
 			top = top.map((p, i) => `${i + 1}. ${p}`)
 			reserve = top.splice(participantsMax ?? top.length)
 
-			reply = `
-		${getHeader(gotEvent)}
+			await sendReply(ctx, updatedEvent, { top, reserve, refused })
 
-		${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-				refused.length ? refused.join('\n') : ''
-			}
-		`
+			// 			reply = `
+			// ${getHeader(updatedEvent)}
 
-			await ctx.replyWithHTML(reply, KEYBOARD)
+			// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
+			// 				refused.length ? refused.join('\n') : ''
+			// 			}
+			// 		`
+
+			// 			await ctx.replyWithHTML(reply, KEYBOARD)
 		}, delay)
 	} catch (err) {
 		console.log({ err })
