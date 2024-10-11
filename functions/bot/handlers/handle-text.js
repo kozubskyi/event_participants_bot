@@ -37,11 +37,18 @@ module.exports = async function handleText(ctx) {
 
 		if (!reserveDeadline) return
 
-		const now = new Date()
+		const nowLocaleString = new Date().toLocaleString('en-US', {
+			timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+		})
+		const now = new Date(formatDate(nowLocaleString))
 		const deadline = new Date(formatDate(reserveDeadline))
 		const delay = deadline - now
 
-		await ctx.reply(`${now}\n${deadline}`)
+		await ctx.reply(
+			`${
+				Intl.DateTimeFormat().resolvedOptions().timeZone
+			}\n\n${nowLocaleString}\n${reserveDeadline}\n\n${now}\n${deadline}`
+		)
 
 		if (delay <= 0) return
 
@@ -77,12 +84,12 @@ module.exports = async function handleText(ctx) {
 			reserve = top.splice(participantsMax ?? top.length)
 
 			reply = `
-${getHeader(gotEvent)}
+		${getHeader(gotEvent)}
 
-${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
+		${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
 				refused.length ? refused.join('\n') : ''
 			}
-`
+		`
 
 			await ctx.replyWithHTML(reply, KEYBOARD)
 		}, delay)
