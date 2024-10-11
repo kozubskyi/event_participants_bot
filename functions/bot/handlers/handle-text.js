@@ -37,18 +37,12 @@ module.exports = async function handleText(ctx) {
 
 		if (!reserveDeadline) return
 
-		const nowLocaleString = new Date().toLocaleString('en-US', {
-			timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-		})
+		const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
 		const now = new Date(formatDate(nowLocaleString))
 		const deadline = new Date(formatDate(reserveDeadline))
 		const delay = deadline - now
 
-		await ctx.reply(
-			`${
-				Intl.DateTimeFormat().resolvedOptions().timeZone
-			}\n\n${nowLocaleString}\n${reserveDeadline}\n\n${now}\n${deadline}`
-		)
+		await ctx.reply(`${nowLocaleString}\n${reserveDeadline}\n\n${now}\n${deadline}`)
 
 		if (delay <= 0) return
 
