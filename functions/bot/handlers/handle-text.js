@@ -42,8 +42,6 @@ module.exports = async function handleText(ctx) {
 		const deadline = new Date(formatDate(reserveDeadline))
 		const delay = deadline - now
 
-		await ctx.reply(`${nowLocaleString}\n${reserveDeadline}\n\n${now}\n${deadline}`)
-
 		if (delay <= 0) return
 
 		setTimeout(async () => {

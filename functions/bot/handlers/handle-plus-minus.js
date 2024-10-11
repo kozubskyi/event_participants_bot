@@ -76,10 +76,11 @@ module.exports = async function handlePlusMinus(ctx) {
 		}
 
 		if (reserveDeadline) {
-			const now = new Date()
-			const reserveDeadlineDate = new Date(formatDate(reserveDeadline))
+			const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+			const now = new Date(formatDate(nowLocaleString))
+			const deadline = new Date(formatDate(reserveDeadline))
 
-			if (now > reserveDeadlineDate) {
+			if (now > deadline) {
 				await ctx.replyWithHTML(
 					`<b>${fullName}</b>, період резерву місць закінчився ${reserveDeadline}. Зараз можна обирати тільки + або -.`
 				)
