@@ -47,7 +47,11 @@ module.exports = async function handleText(ctx) {
 			creatorUsername: ctx.from.username,
 		}
 
-		cron.schedule(getCronExp(reserveDeadline), async () => {
+		const reserveDeadlineCronExp = getCronExp(reserveDeadline)
+
+		await ctx.reply(reserveDeadlineCronExp)
+
+		cron.schedule(reserveDeadlineCronExp, async () => {
 			await ctx.reply(`CRON reserveDeadline\n${new Date()}`)
 
 			const gotEvent = await getEvent(query)
@@ -77,7 +81,11 @@ module.exports = async function handleText(ctx) {
 			await sendReply(ctx, updatedEvent, { top, reserve, refused })
 		})
 
-		cron.schedule(getCronExp(end ?? start), async () => {
+		const deleteEventCronExp = getCronExp(end ?? start)
+
+		await ctx.reply(deleteEventCronExp)
+
+		cron.schedule(deleteEventCronExp, async () => {
 			await ctx.reply(`CRON deleteEvent\n${new Date()}`)
 
 			await deleteEvent(query)
