@@ -27,8 +27,6 @@ module.exports = async function checkRegistrationTime(ctx, event) {
 
 		const registrationEndDate = new Date(year, month - 1, day, hours, minutes)
 
-		await ctx.reply(`${registrationEndDate}`)
-
 		if (nowInKyiv > registrationEndDate) {
 			await ctx.replyWithHTML(`<b>${getFullName(ctx)}</b>, період реєстрації вже закінчився.`)
 			return false
