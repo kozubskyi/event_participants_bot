@@ -1,10 +1,7 @@
-const { Markup } = require('telegraf')
 const { getEvent, updateEvent } = require('../services/events-api')
 const getFullName = require('../helpers/get-full-name')
 const checkRegistrationTime = require('../helpers/check-registration-time')
-const formatDate = require('../helpers/format-date')
 const deleteMessage = require('../helpers/delete-message')
-const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
 const { MINUS, MINUS_FRIEND } = require('../helpers/constants')
 const sendReply = require('../helpers/send-reply')
@@ -68,16 +65,6 @@ module.exports = async function handleMinus(ctx) {
 			}
 		}
 
-		// if (reserveDeadline) {
-		// 	const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-		// 	const now = new Date(formatDate(nowLocaleString))
-		// 	const deadline = new Date(formatDate(reserveDeadline))
-
-		// 	if (now > deadline) {
-		// 		participants = participants.filter(p => !p.includes('±'))
-		// 	}
-		// }
-
 		const updatedEvent = await updateEvent(query, { participants })
 
 		await deleteMessage(ctx)
@@ -97,16 +84,6 @@ module.exports = async function handleMinus(ctx) {
 			})
 
 		await sendReply(ctx, updatedEvent, { top, reserve, refused })
-
-		// 		const reply = `
-		// ${getHeader(updatedEvent)}
-
-		// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-		// 			refused.length ? refused.join('\n') : ''
-		// 		}
-		// `
-
-		// 		await ctx.replyWithHTML(reply, KEYBOARD)
 	} catch (err) {
 		console.log({ err })
 	}

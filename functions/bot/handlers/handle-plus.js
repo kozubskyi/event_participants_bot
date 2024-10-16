@@ -1,11 +1,7 @@
-const { Markup } = require('telegraf')
 const { getEvent, updateEvent } = require('../services/events-api')
 const getFullName = require('../helpers/get-full-name')
 const checkRegistrationTime = require('../helpers/check-registration-time')
-const formatDate = require('../helpers/format-date')
 const deleteMessage = require('../helpers/delete-message')
-const getHeader = require('../helpers/get-header')
-const { KEYBOARD } = require('../helpers/buttons')
 const { PLUS, PLUS_FRIEND } = require('../helpers/constants')
 const sendReply = require('../helpers/send-reply')
 // const handleError = require('./handle-error')
@@ -74,25 +70,6 @@ module.exports = async function handlePlus(ctx) {
 
 			participants.push(currentAddedFriend)
 		}
-
-		// if (reserveDeadline) {
-		// 	// const [date, time] = userDateTimeStr.split(', ')
-		// 	// const [day, month, year] = date.split('.')
-		// 	// const [hours, minutes] = time.split(':')
-
-		// 	// const now = new Date()
-		// 	// const deadline = new Date(year, month - 1, day, hours, minutes)
-
-		// 	// const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-		// 	// const now = new Date(formatDate(nowLocaleString))
-		// 	// const deadline = new Date(formatDate(reserveDeadline))
-
-		// 	// await ctx.reply(`${now}\n${deadline}`)
-
-		// 	// if (now > deadline) {
-		// 	// 	participants = participants.filter(p => !p.includes('±'))
-		// 	// }
-		// }
 
 		const updatedEvent = await updateEvent(query, { participants })
 

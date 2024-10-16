@@ -1,8 +1,6 @@
-const { Markup } = require('telegraf')
 const { createEvent, getEvent, updateEvent, deleteEvent } = require('../services/events-api')
 const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
-// const formatDate = require('../helpers/format-date')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 const sendReply = require('../helpers/send-reply')
 const cron = require('node-cron')
@@ -47,15 +45,11 @@ module.exports = async function handleText(ctx) {
 			creatorUsername: ctx.from.username,
 		}
 
-		const reserveDeadlineCronExp = getCronExp(reserveDeadline)
-
 		const options = { timezone: 'Europe/Kyiv' }
 
 		cron.schedule(
-			reserveDeadlineCronExp,
+			getCronExp(reserveDeadline),
 			async () => {
-				await ctx.reply(`CRON reserveDeadline\n${new Date()}`)
-
 				const gotEvent = await getEvent(query)
 
 				if (!gotEvent) return
@@ -85,19 +79,7 @@ module.exports = async function handleText(ctx) {
 			options
 		)
 
-		const deleteEventCronExp = getCronExp(end ?? start)
-
-		cron.schedule(
-			deleteEventCronExp,
-			async () => {
-				await ctx.reply(`CRON deleteEvent\n${new Date()}`)
-
-				await deleteEvent(query)
-			},
-			options
-		)
-
-		await ctx.reply(`${new Date()}\n${reserveDeadlineCronExp}\n${deleteEventCronExp}\n${options}`)
+		cron.schedule(getCronExp(end ?? start), async () => await deleteEvent(query), options)
 	} catch (err) {
 		console.log({ err })
 	}

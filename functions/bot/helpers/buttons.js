@@ -1,5 +1,5 @@
 const { Markup } = require('telegraf')
-const { PLUS, PLUS_MINUS, MINUS, PLUS_FRIEND, PLUS_MINUS_FRIEND, MINUS_FRIEND, FINISH_EVENT } = require('./constants')
+const { PLUS, PLUS_MINUS, MINUS, PLUS_FRIEND, PLUS_MINUS_FRIEND, MINUS_FRIEND } = require('./constants')
 
 const buttons = Object.freeze({
 	PLUS_BUTTON: Markup.button.callback(PLUS, PLUS),
@@ -9,8 +9,6 @@ const buttons = Object.freeze({
 	PLUS_FRIEND_BUTTON: Markup.button.callback(PLUS_FRIEND, PLUS_FRIEND),
 	PLUS_MINUS_FRIEND_BUTTON: Markup.button.callback(PLUS_MINUS_FRIEND, PLUS_MINUS_FRIEND),
 	MINUS_FRIEND_BUTTON: Markup.button.callback(MINUS_FRIEND, MINUS_FRIEND),
-
-	FINISH_EVENT_BUTTON: Markup.button.callback(FINISH_EVENT, FINISH_EVENT),
 
 	KEYBOARD: Markup.inlineKeyboard([
 		[
@@ -23,7 +21,6 @@ const buttons = Object.freeze({
 			Markup.button.callback(PLUS_MINUS_FRIEND, PLUS_MINUS_FRIEND),
 			Markup.button.callback(MINUS_FRIEND, MINUS_FRIEND),
 		],
-		// [Markup.button.callback(FINISH_EVENT, FINISH_EVENT)],
 	]),
 })
 
