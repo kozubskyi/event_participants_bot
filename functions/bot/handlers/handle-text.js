@@ -49,7 +49,7 @@ module.exports = async function handleText(ctx) {
 
 		const reserveDeadlineCronExp = getCronExp(reserveDeadline)
 
-		const options = { timezone: 'America/Sao_Paulo' }
+		const options = { timezone: 'Europe/Kyiv' }
 
 		cron.schedule(
 			reserveDeadlineCronExp,
@@ -86,8 +86,6 @@ module.exports = async function handleText(ctx) {
 		)
 
 		const deleteEventCronExp = getCronExp(end ?? start)
-
-		await ctx.reply(`${new Date()}\n${reserveDeadlineCronExp}\n${deleteEventCronExp}`)
 
 		cron.schedule(
 			deleteEventCronExp,
