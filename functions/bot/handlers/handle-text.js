@@ -49,47 +49,57 @@ module.exports = async function handleText(ctx) {
 
 		const reserveDeadlineCronExp = getCronExp(reserveDeadline)
 
-		await ctx.reply(reserveDeadlineCronExp)
+		const options = { timezone: 'America/Sao_Paulo' }
 
-		cron.schedule(reserveDeadlineCronExp, async () => {
-			await ctx.reply(`CRON reserveDeadline\n${new Date()}`)
+		cron.schedule(
+			reserveDeadlineCronExp,
+			async () => {
+				await ctx.reply(`CRON reserveDeadline\n${new Date()}`)
 
-			const gotEvent = await getEvent(query)
+				const gotEvent = await getEvent(query)
 
-			if (!gotEvent) return
+				if (!gotEvent) return
 
-			let { participants, participantsMax } = gotEvent
+				let { participants, participantsMax } = gotEvent
 
-			let top = []
-			let reserve = []
-			let refused = []
+				let top = []
+				let reserve = []
+				let refused = []
 
-			participants.forEach(participant => {
-				const lastSymbol = participant[participant.length - 1]
+				participants.forEach(participant => {
+					const lastSymbol = participant[participant.length - 1]
 
-				lastSymbol !== '-' && lastSymbol !== '±' && top.push(participant)
-				lastSymbol === '-' && refused.push(participant)
-			})
+					lastSymbol !== '-' && lastSymbol !== '±' && top.push(participant)
+					lastSymbol === '-' && refused.push(participant)
+				})
 
-			participants = [...top, ...refused]
+				participants = [...top, ...refused]
 
-			const updatedEvent = await updateEvent(query, { participants })
+				const updatedEvent = await updateEvent(query, { participants })
 
-			top = top.map((p, i) => `${i + 1}. ${p}`)
-			reserve = top.splice(participantsMax ?? top.length)
+				top = top.map((p, i) => `${i + 1}. ${p}`)
+				reserve = top.splice(participantsMax ?? top.length)
 
-			await sendReply(ctx, updatedEvent, { top, reserve, refused })
-		})
+				await sendReply(ctx, updatedEvent, { top, reserve, refused })
+			},
+			options
+		)
 
 		const deleteEventCronExp = getCronExp(end ?? start)
 
 		await ctx.reply(`${new Date()}\n${reserveDeadlineCronExp}\n${deleteEventCronExp}`)
 
-		cron.schedule(deleteEventCronExp, async () => {
-			await ctx.reply(`CRON deleteEvent\n${new Date()}`)
+		cron.schedule(
+			deleteEventCronExp,
+			async () => {
+				await ctx.reply(`CRON deleteEvent\n${new Date()}`)
 
-			await deleteEvent(query)
-		})
+				await deleteEvent(query)
+			},
+			options
+		)
+
+		await ctx.reply(`${new Date()}\n${reserveDeadlineCronExp}\n${deleteEventCronExp}\n${options}`)
 	} catch (err) {
 		console.log({ err })
 	}
