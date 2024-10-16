@@ -83,7 +83,7 @@ module.exports = async function handleText(ctx) {
 
 		const deleteEventCronExp = getCronExp(end ?? start)
 
-		await ctx.reply(deleteEventCronExp)
+		await ctx.reply(`${new Date()}\n${reserveDeadlineCronExp}\n${deleteEventCronExp}`)
 
 		cron.schedule(deleteEventCronExp, async () => {
 			await ctx.reply(`CRON deleteEvent\n${new Date()}`)
