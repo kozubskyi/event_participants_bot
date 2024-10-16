@@ -68,15 +68,15 @@ module.exports = async function handleMinus(ctx) {
 			}
 		}
 
-		if (reserveDeadline) {
-			const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-			const now = new Date(formatDate(nowLocaleString))
-			const deadline = new Date(formatDate(reserveDeadline))
+		// if (reserveDeadline) {
+		// 	const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+		// 	const now = new Date(formatDate(nowLocaleString))
+		// 	const deadline = new Date(formatDate(reserveDeadline))
 
-			if (now > deadline) {
-				participants = participants.filter(p => !p.includes('±'))
-			}
-		}
+		// 	if (now > deadline) {
+		// 		participants = participants.filter(p => !p.includes('±'))
+		// 	}
+		// }
 
 		const updatedEvent = await updateEvent(query, { participants })
 

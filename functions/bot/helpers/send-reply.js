@@ -33,7 +33,7 @@ ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n$
 			buttons = Markup.inlineKeyboard([
 				[PLUS_BUTTON, MINUS_BUTTON],
 				[PLUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
-				[FINISH_EVENT_BUTTON],
+				// [FINISH_EVENT_BUTTON],
 			])
 		}
 	}

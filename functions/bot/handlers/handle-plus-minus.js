@@ -76,18 +76,18 @@ module.exports = async function handlePlusMinus(ctx) {
 			participants.push(currentAddedFriend)
 		}
 
-		if (reserveDeadline) {
-			const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-			const now = new Date(formatDate(nowLocaleString))
-			const deadline = new Date(formatDate(reserveDeadline))
+		// if (reserveDeadline) {
+		// 	const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+		// 	const now = new Date(formatDate(nowLocaleString))
+		// 	const deadline = new Date(formatDate(reserveDeadline))
 
-			if (now > deadline) {
-				await ctx.replyWithHTML(
-					`<b>${fullName}</b>, період резерву місць закінчився ${reserveDeadline}. Зараз можна обирати тільки + або -.`
-				)
-				return
-			}
-		}
+		// 	if (now > deadline) {
+		// 		await ctx.replyWithHTML(
+		// 			`<b>${fullName}</b>, період резерву місць закінчився ${reserveDeadline}. Зараз можна обирати тільки + або -.`
+		// 		)
+		// 		return
+		// 	}
+		// }
 
 		const updatedEvent = await updateEvent(query, { participants })
 

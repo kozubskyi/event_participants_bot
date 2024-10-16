@@ -21,7 +21,7 @@ function run() {
 	bot.action(constants.PLUS_MINUS_FRIEND, async ctx => await handlers.handlePlusMinus(ctx))
 	bot.action(constants.MINUS_FRIEND, async ctx => await handlers.handleMinus(ctx))
 
-	bot.action(constants.FINISH_EVENT, async ctx => await handlers.handleFinishEvent(ctx))
+	// bot.action(constants.FINISH_EVENT, async ctx => await handlers.handleFinishEvent(ctx))
 
 	console.log('✅ The bot is configured and must work correctly')
 }

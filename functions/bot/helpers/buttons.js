@@ -23,7 +23,7 @@ const buttons = Object.freeze({
 			Markup.button.callback(PLUS_MINUS_FRIEND, PLUS_MINUS_FRIEND),
 			Markup.button.callback(MINUS_FRIEND, MINUS_FRIEND),
 		],
-		[Markup.button.callback(FINISH_EVENT, FINISH_EVENT)],
+		// [Markup.button.callback(FINISH_EVENT, FINISH_EVENT)],
 	]),
 })
 

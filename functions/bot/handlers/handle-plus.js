@@ -75,15 +75,24 @@ module.exports = async function handlePlus(ctx) {
 			participants.push(currentAddedFriend)
 		}
 
-		if (reserveDeadline) {
-			const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-			const now = new Date(formatDate(nowLocaleString))
-			const deadline = new Date(formatDate(reserveDeadline))
+		// if (reserveDeadline) {
+		// 	// const [date, time] = userDateTimeStr.split(', ')
+		// 	// const [day, month, year] = date.split('.')
+		// 	// const [hours, minutes] = time.split(':')
 
-			if (now > deadline) {
-				participants = participants.filter(p => !p.includes('±'))
-			}
-		}
+		// 	// const now = new Date()
+		// 	// const deadline = new Date(year, month - 1, day, hours, minutes)
+
+		// 	// const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+		// 	// const now = new Date(formatDate(nowLocaleString))
+		// 	// const deadline = new Date(formatDate(reserveDeadline))
+
+		// 	// await ctx.reply(`${now}\n${deadline}`)
+
+		// 	// if (now > deadline) {
+		// 	// 	participants = participants.filter(p => !p.includes('±'))
+		// 	// }
+		// }
 
 		const updatedEvent = await updateEvent(query, { participants })
 
@@ -107,16 +116,6 @@ module.exports = async function handlePlus(ctx) {
 		const refused = participants.filter(p => p[p.length - 1] === '-')
 
 		await sendReply(ctx, updatedEvent, { top, reserve, refused })
-
-		// 		const reply = `
-		// ${getHeader(updatedEvent)}
-
-		// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-		// 			refused.length ? refused.join('\n') : ''
-		// 		}
-		// `
-
-		// 		await ctx.replyWithHTML(reply, KEYBOARD)
 	} catch (err) {
 		console.log({ err })
 	}

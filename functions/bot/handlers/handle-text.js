@@ -1,10 +1,12 @@
 const { Markup } = require('telegraf')
-const { createEvent, getEvent, updateEvent } = require('../services/events-api')
+const { createEvent, getEvent, updateEvent, deleteEvent } = require('../services/events-api')
 const getHeader = require('../helpers/get-header')
 const { KEYBOARD } = require('../helpers/buttons')
-const formatDate = require('../helpers/format-date')
+// const formatDate = require('../helpers/format-date')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 const sendReply = require('../helpers/send-reply')
+const cron = require('node-cron')
+const getCronExp = require('../helpers/get-cron-expression')
 // const handleError = require('./handle-error')
 
 module.exports = async function handleText(ctx) {
@@ -24,7 +26,7 @@ module.exports = async function handleText(ctx) {
 				return acc
 			}, {})
 
-		const { title, start, reserveDeadline } = event
+		const { title, start, end, reserveDeadline } = event
 
 		if (!title || !start) return await ctx.reply(`⚠️ Невірно введені дані`)
 
@@ -38,21 +40,15 @@ module.exports = async function handleText(ctx) {
 
 		if (!reserveDeadline) return
 
-		const nowLocaleString = new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-		const now = new Date(formatDate(nowLocaleString))
-		const deadline = new Date(formatDate(reserveDeadline))
-		const delay = deadline - now
+		const query = {
+			chatId: ctx.chat.id,
+			title,
+			start,
+			creatorUsername: ctx.from.username,
+		}
 
-		// console.log({ delay })
-
-		if (delay <= 0) return
-
-		setTimeout(async () => {
-			const query = {
-				chatId: ctx.chat.id,
-				title,
-				start,
-			}
+		cron.schedule(getCronExp(reserveDeadline), async () => {
+			await ctx.reply(`CRON reserveDeadline\n${new Date()}`)
 
 			const gotEvent = await getEvent(query)
 
@@ -79,17 +75,13 @@ module.exports = async function handleText(ctx) {
 			reserve = top.splice(participantsMax ?? top.length)
 
 			await sendReply(ctx, updatedEvent, { top, reserve, refused })
+		})
 
-			// 			reply = `
-			// ${getHeader(updatedEvent)}
+		cron.schedule(getCronExp(end ?? start), async () => {
+			await ctx.reply(`CRON deleteEvent\n${new Date()}`)
 
-			// ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n${reserve.join('\n')}\n\n` : ''}${
-			// 				refused.length ? refused.join('\n') : ''
-			// 			}
-			// 		`
-
-			// 			await ctx.replyWithHTML(reply, KEYBOARD)
-		}, delay)
+			await deleteEvent(query)
+		})
 	} catch (err) {
 		console.log({ err })
 	}
