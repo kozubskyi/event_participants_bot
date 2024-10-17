@@ -13,11 +13,12 @@ module.exports = async function handlePlusMinus(ctx) {
 		splitted.splice(splitted.indexOf(' '))
 
 		const title = splitted[0]
+		const start = splitted.find(el => el.includes('Початок:')).replace('Початок: ', '')
 
 		const query = {
 			chatId: ctx.chat.id,
 			title,
-			start: splitted[1].replace('Початок: ', ''),
+			start,
 		}
 
 		const event = await getEvent(query)

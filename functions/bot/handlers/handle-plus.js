@@ -11,11 +11,12 @@ module.exports = async function handlePlus(ctx) {
 		const splitted = ctx.callbackQuery.message.text.split('\n')
 
 		const title = splitted[0]
+		const start = splitted.find(el => el.includes('Початок:')).replace('Початок: ', '')
 
 		const query = {
 			chatId: ctx.chat.id,
 			title,
-			start: splitted[1].replace('Початок: ', ''),
+			start,
 		}
 
 		const event = await getEvent(query)
