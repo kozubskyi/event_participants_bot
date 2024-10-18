@@ -29,7 +29,8 @@ module.exports = async function handleText(ctx) {
 		if (!title || !start) return await ctx.reply(`⚠️ Невірно введені дані`)
 
 		event.chatId = ctx.chat.id
-		event.creatorUsername = ctx.from.username
+		event.chatTitle = ctx.chat?.title
+		event.creatorUsername = ctx.from?.username
 
 		const createdEvent = await createEvent(event)
 
@@ -48,7 +49,7 @@ module.exports = async function handleText(ctx) {
 			chatId: ctx.chat.id,
 			title,
 			start,
-			creatorUsername: ctx.from.username,
+			creatorUsername: ctx.from?.username,
 		}
 
 		const options = { timezone: 'Europe/Kyiv' }
