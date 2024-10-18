@@ -25,7 +25,8 @@ registrationEnd: DD.MM.YYYY, HH:MM
 participantsMin: Number
 participantsMax: Number
 
-* - обов'язкове поле`)
+<i>Дату та час вказувати в Київському часовому поясі!
+* - обов'язкове поле</i>`)
 	)
 	bot.command(
 		'example',
