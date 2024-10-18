@@ -13,6 +13,11 @@ exports.getEvent = async query => {
 	return data
 }
 
+exports.getEvents = async chatId => {
+	const { data } = await axios.get(`/events?chatId=${chatId}`)
+	return data
+}
+
 exports.updateEvent = async (query, fieldsToUpdate) => {
 	const { chatId, title, start } = query
 	const { data } = await axios.patch(`/events?chatId=${chatId}&title=${title}&start=${start}`, fieldsToUpdate)
