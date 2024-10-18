@@ -5,7 +5,7 @@ const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creato
 const sendReply = require('../helpers/send-reply')
 const cron = require('node-cron')
 const getCronExp = require('../helpers/get-cron-expression')
-// const handleError = require('./handle-error')
+const handleError = require('./handle-error')
 
 module.exports = async function handleText(ctx) {
 	try {
@@ -88,6 +88,6 @@ module.exports = async function handleText(ctx) {
 
 		cron.schedule(getCronExp(end ?? start), async () => await deleteEvent(query), options)
 	} catch (err) {
-		console.log({ err })
+		await handleError({ ctx, err })
 	}
 }

@@ -4,7 +4,7 @@ const checkRegistrationTime = require('../helpers/check-registration-time')
 const deleteMessage = require('../helpers/delete-message')
 const { PLUS, PLUS_FRIEND } = require('../helpers/constants')
 const sendReply = require('../helpers/send-reply')
-// const handleError = require('./handle-error')
+const handleError = require('./handle-error')
 
 module.exports = async function handlePlus(ctx) {
 	try {
@@ -98,6 +98,6 @@ module.exports = async function handlePlus(ctx) {
 
 		await sendReply(ctx, updatedEvent, { top, reserve, refused })
 	} catch (err) {
-		console.log({ err })
+		await handleError({ ctx, err })
 	}
 }

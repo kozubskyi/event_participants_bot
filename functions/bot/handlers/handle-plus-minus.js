@@ -5,7 +5,7 @@ const deleteMessage = require('../helpers/delete-message')
 const { KEYBOARD } = require('../helpers/buttons')
 const { PLUS_MINUS, PLUS_MINUS_FRIEND } = require('../helpers/constants')
 const sendReply = require('../helpers/send-reply')
-// const handleError = require('./handle-error')
+const handleError = require('./handle-error')
 
 module.exports = async function handlePlusMinus(ctx) {
 	try {
@@ -100,6 +100,6 @@ module.exports = async function handlePlusMinus(ctx) {
 
 		await sendReply(ctx, updatedEvent, { top, reserve, refused })
 	} catch (err) {
-		console.log({ err })
+		await handleError({ ctx, err })
 	}
 }

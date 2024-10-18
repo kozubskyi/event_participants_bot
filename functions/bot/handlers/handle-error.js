@@ -1,4 +1,3 @@
-// const { resetStore } = require('../services/stores-api')
 const { CREATOR_USERNAME, CREATOR_CHAT_ID } = require('../helpers/constants')
 
 module.exports = async function handleError({ ctx, err }) {
@@ -13,15 +12,15 @@ module.exports = async function handleError({ ctx, err }) {
 
 	const error = err?.response?.data?.message ?? err
 
-	// await resetStore(ctx)
-
 	let creatorReply = `
 ❌ Помилка!
 Chat: ${type} ${title ? `"${title}" ` : ''}${chatId}
 
-Користувач ${firstName} ${lastName} <${username}> ${userChatId} щойно відправив повідомлення "${value}" і виникла помилка: "${error}"`
+Користувач ${firstName} ${lastName} <${username}> ${userChatId} щойно намагався створити подію
 
-	// username !== CREATOR_USERNAME && (await ctx.reply('Виникли технічні неполадки, скоро полагоджусь і повернусь 👨‍🔧'))
+"${value}"
+
+і виникла помилка: "${error}"`
 
 	await ctx.telegram.sendMessage(CREATOR_CHAT_ID, creatorReply)
 }

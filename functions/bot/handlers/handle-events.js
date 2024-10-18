@@ -1,6 +1,6 @@
 const { getEvents } = require('../services/events-api')
 const sendReply = require('../helpers/send-reply')
-// const handleError = require('./handle-error')
+const handleError = require('./handle-error')
 
 module.exports = async function handleEvents(ctx) {
 	try {
@@ -23,6 +23,6 @@ module.exports = async function handleEvents(ctx) {
 			await sendReply(ctx, event, { top, reserve, refused })
 		})
 	} catch (err) {
-		console.log({ err })
+		await handleError({ ctx, err })
 	}
 }
