@@ -79,6 +79,9 @@ module.exports = async function handleText(ctx) {
 				const updatedEvent = await updateEvent(query, { participants })
 
 				top = top.map((p, i) => `${i + 1}. ${p}`)
+				for (let i = top.length; i < participantsMax; i++) {
+					top.push(`${i + 1}.`)
+				}
 				reserve = top.splice(participantsMax ?? top.length)
 
 				await sendReply(ctx, updatedEvent, { top, reserve, refused })
