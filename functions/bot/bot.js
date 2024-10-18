@@ -32,7 +32,7 @@ participantsMax: Number
 		'example',
 		async ctx =>
 			await ctx.replyWithHTML(`
-CREATE_EVENT:
+CREATE_EVENT
 title: Футбол
 description: Формат 5х5, м'яч 4-ка
 location: Броварська
