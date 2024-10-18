@@ -24,7 +24,7 @@ module.exports = async function handleText(ctx) {
 				return acc
 			}, {})
 
-		const { title, start, end, reserveDeadline } = event
+		const { title, start, end, reserveDeadline, participantsMin, participantsMax } = event
 
 		if (!title || !start) return await ctx.reply(`⚠️ Невірно введені дані`)
 
@@ -33,7 +33,14 @@ module.exports = async function handleText(ctx) {
 
 		const createdEvent = await createEvent(event)
 
-		await ctx.replyWithHTML(getHeader(createdEvent), KEYBOARD)
+		let top = []
+
+		if (participantsMin || participantsMax) {
+			top = new Array(participantsMin || participantsMax).fill('').map((el, i) => `${i + 1}.`)
+		}
+
+		// await ctx.replyWithHTML(getHeader(createdEvent), KEYBOARD)
+		await sendReply(ctx, createdEvent, { top })
 		await sendInfoMessageToCreator(ctx)
 
 		if (!reserveDeadline) return

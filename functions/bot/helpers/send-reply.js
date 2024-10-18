@@ -4,7 +4,7 @@ const { PLUS_BUTTON, MINUS_BUTTON, PLUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON, KEYB
 
 module.exports = async function sendReply(ctx, event, preparedParticipants) {
 	const { reserveDeadline } = event
-	const { top, reserve, refused } = preparedParticipants
+	const { top = [], reserve = [], refused = [] } = preparedParticipants
 
 	const reply = `
 ${getHeader(event)}

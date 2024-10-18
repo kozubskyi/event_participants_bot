@@ -73,6 +73,9 @@ module.exports = async function handleMinus(ctx) {
 		const notMinusParticipants = participants.filter(p => p[p.length - 1] !== '-').map((p, i) => `${i + 1}. ${p}`)
 
 		const top = notMinusParticipants.slice(0, participantsMax ?? notMinusParticipants.length)
+		for (let i = top.length; i < participantsMax; i++) {
+			top.push(`${i + 1}.`)
+		}
 		const reserve = notMinusParticipants.slice(participantsMax ?? notMinusParticipants.length)
 		const refused = participants
 			.filter(p => p[p.length - 1] === '-')
