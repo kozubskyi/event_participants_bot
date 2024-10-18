@@ -10,6 +10,24 @@ const bot = new Telegraf(process.env.BOT_TOKEN)
 
 function run() {
 	bot.command('test', async ctx => await ctx.reply('Бот працює'))
+	bot.command(
+		'options',
+		async ctx =>
+			await ctx.replyWithHTML(`<b>Всі опції CREATE_EVENT:</b>
+
+title: String *
+description: String
+location: String
+start: DD.MM.YYYY, HH:MM *
+end: DD.MM.YYYY, HH:MM
+registrationStart: DD.MM.YYYY, HH:MM
+reserveDeadline: DD.MM.YYYY, HH:MM
+registrationEnd: DD.MM.YYYY, HH:MM
+participantsMin: Number
+participantsMax: Number
+
+* - обов'язкове поле`)
+	)
 
 	bot.on('text', async ctx => await handlers.handleText(ctx))
 
