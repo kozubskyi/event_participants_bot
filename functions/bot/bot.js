@@ -28,6 +28,22 @@ participantsMax: Number
 
 * - обов'язкове поле`)
 	)
+	bot.command(
+		'example',
+		async ctx =>
+			await ctx.replyWithHTML(`
+CREATE_EVENT:
+title: Футбол
+description: Формат 5х5, м'яч 4-ка
+location: Броварська
+start: 10.10.2024, 20:30
+end: 10.10.2024, 22:00
+registrationStart: 10.10.2024, 09:00
+reserveDeadline: 10.10.2024, 16:00
+registrationEnd: 10.10.2024, 20:25
+participantsMin: 10
+participantsMax: 15`)
+	)
 
 	bot.on('text', async ctx => await handlers.handleText(ctx))
 

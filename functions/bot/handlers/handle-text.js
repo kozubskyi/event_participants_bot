@@ -39,7 +39,6 @@ module.exports = async function handleText(ctx) {
 			top = new Array(participantsMin || participantsMax).fill('').map((el, i) => `${i + 1}.`)
 		}
 
-		// await ctx.replyWithHTML(getHeader(createdEvent), KEYBOARD)
 		await sendReply(ctx, createdEvent, { top })
 		await sendInfoMessageToCreator(ctx)
 
