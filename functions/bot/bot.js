@@ -9,7 +9,6 @@ const { createEvent } = require('./services/events-api')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 function run() {
-	bot.command('test', async ctx => await ctx.reply('Бот працює'))
 	bot.command(
 		'options',
 		async ctx =>
@@ -44,6 +43,8 @@ registrationEnd: 10.10.2024, 20:25
 participantsMin: 10
 participantsMax: 15`)
 	)
+	bot.command('events', async ctx => await ctx.replyWithHTML('Команда поки в розробці'))
+	bot.command('test', async ctx => await ctx.reply('Бот працює'))
 
 	bot.on('text', async ctx => await handlers.handleText(ctx))
 
