@@ -9,7 +9,7 @@ const handleError = require('./handle-error')
 
 module.exports = async function handleMinus(ctx) {
 	try {
-		const splitted = ctx.callbackQuery.message.text.split('\n')
+		const splitted = ctx.callbackQuery.message?.text?.split('\n')
 		splitted.splice(splitted.indexOf(''))
 
 		const title = splitted[0]

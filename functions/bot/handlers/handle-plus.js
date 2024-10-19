@@ -8,7 +8,7 @@ const handleError = require('./handle-error')
 
 module.exports = async function handlePlus(ctx) {
 	try {
-		const splitted = ctx.callbackQuery.message.text.split('\n')
+		const splitted = ctx.callbackQuery.message?.text?.split('\n')
 
 		const title = splitted[0]
 		const start = splitted.find(el => el.includes('Початок:')).replace('Початок: ', '')

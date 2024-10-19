@@ -16,7 +16,7 @@ module.exports = async function handleError({ ctx, err }) {
 ❌ Помилка!
 Chat: ${type} ${title ? `"${title}" ` : ''}${chatId}
 
-Користувач ${firstName} ${lastName} <${username}> ${userChatId} щойно намагався створити подію
+Користувач ${firstName} ${lastName} <${username}> ${userChatId} щойно відправив повідомлення
 
 "${value}"
 
