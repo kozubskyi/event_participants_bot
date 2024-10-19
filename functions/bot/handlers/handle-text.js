@@ -36,8 +36,8 @@ module.exports = async function handleText(ctx) {
 
 		let top = []
 
-		if (participantsMin || participantsMax) {
-			top = new Array(participantsMin || participantsMax).fill('').map((el, i) => `${i + 1}.`)
+		if (participantsMax) {
+			top = new Array(participantsMax).fill('').map((el, i) => `${i + 1}.`)
 		}
 
 		await sendReply(ctx, createdEvent, { top })
