@@ -3,7 +3,7 @@ const checkReserveDeadline = require('../helpers/check-reserve-deadline')
 const sendReply = require('../helpers/send-reply')
 const handleError = require('./handle-error')
 
-module.exports = async function handleEvents(ctx) {
+module.exports = async function handleActiveEvents(ctx) {
 	try {
 		const events = await getEvents(ctx.chat.id)
 

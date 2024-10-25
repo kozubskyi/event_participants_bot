@@ -5,6 +5,6 @@ module.exports = {
 	handleMinus: require('./handle-minus'),
 	handleUpdate: require('./handle-update'),
 	handleFinishEvent: require('./handle-finish-event'),
-	handleEvents: require('./handle-events'),
+	handleActiveEvents: require('./handle-active-events'),
 	handleError: require('./handle-error'),
 }
