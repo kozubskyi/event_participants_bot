@@ -16,7 +16,7 @@ module.exports = async function handleActiveEvents(ctx) {
 			let reserve = []
 			let refused = []
 
-			if (await checkReserveDeadline(reserveDeadline, ctx)) {
+			if (checkReserveDeadline(reserveDeadline)) {
 				top = participants
 					.filter(participant => participant.decision === '+')
 					.map((participant, i) => `${i + 1}. ${participant.name}`)
