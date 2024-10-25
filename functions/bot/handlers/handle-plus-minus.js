@@ -92,7 +92,7 @@ module.exports = async function handlePlusMinus(ctx) {
 		let reserve = []
 		let refused = []
 
-		if (checkReserveDeadline(reserveDeadline)) {
+		if (await checkReserveDeadline(reserveDeadline, ctx)) {
 			top = participants
 				.filter(participant => participant.decision === '+')
 				.map((participant, i) => `${i + 1}. ${participant.name}`)
