@@ -7,8 +7,8 @@ exports.createEvent = async eventData => {
 	return data
 }
 
-exports.getEvent = async query => {
-	const { chatId, title, start } = query
+exports.getEvent = async credentials => {
+	const { chatId, title, start } = credentials
 	const { data } = await axios.get(`/events?chatId=${chatId}&title=${title}&start=${start}`)
 	return data
 }
@@ -18,14 +18,14 @@ exports.getEvents = async chatId => {
 	return data
 }
 
-exports.updateEvent = async (query, fieldsToUpdate) => {
-	const { chatId, title, start } = query
+exports.updateEvent = async (credentials, fieldsToUpdate) => {
+	const { chatId, title, start } = credentials
 	const { data } = await axios.patch(`/events?chatId=${chatId}&title=${title}&start=${start}`, fieldsToUpdate)
 	return data
 }
 
-exports.deleteEvent = async query => {
-	const { chatId, title, start } = query
+exports.deleteEvent = async credentials => {
+	const { chatId, title, start } = credentials
 	const { data } = await axios.delete(`/events?chatId=${chatId}&title=${title}&start=${start}`)
 	return data
 }
