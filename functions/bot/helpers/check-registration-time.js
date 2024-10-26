@@ -1,8 +1,8 @@
 const getDate = require('./get-date')
-const getFullName = require('./get-full-name')
+const getName = require('./get-name')
 
 module.exports = async function checkRegistrationTime(ctx, event) {
-	const { registrationStart, registrationEnd, start } = event
+	const { registrationStart, registrationEnd } = event
 
 	const now = new Date()
 	const kyivOffset = 3 * 60 * 60 * 1000
@@ -13,7 +13,7 @@ module.exports = async function checkRegistrationTime(ctx, event) {
 		const registrationStartDate = getDate(registrationStart)
 
 		if (nowInKyiv < registrationStartDate) {
-			await ctx.replyWithHTML(`<b>${getFullName(ctx)}</b>, період реєстрації ще не розпочався.`)
+			await ctx.replyWithHTML(`<b>${getName(ctx)}</b>, період реєстрації ще не розпочався.`)
 			return false
 		}
 	}
@@ -22,7 +22,7 @@ module.exports = async function checkRegistrationTime(ctx, event) {
 		const registrationEndDate = getDate(registrationEnd)
 
 		if (nowInKyiv > registrationEndDate) {
-			await ctx.replyWithHTML(`<b>${getFullName(ctx)}</b>, період реєстрації вже закінчився.`)
+			await ctx.replyWithHTML(`<b>${getName(ctx)}</b>, період реєстрації вже закінчився.`)
 			return false
 		}
 	}

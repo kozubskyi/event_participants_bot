@@ -23,7 +23,7 @@ module.exports = async function handleActiveEvents(ctx) {
 
 				let reservePlus = []
 				if (top.length > participantsMax) {
-					reservePlus = top.splice(participantsMax ?? top.length)
+					reservePlus = top.splice(participantsMax || top.length)
 				} else {
 					for (let i = top.length; i < participantsMax; i++) {
 						top.push(`${i + 1}.`)
@@ -41,11 +41,11 @@ module.exports = async function handleActiveEvents(ctx) {
 					.filter(participant => participant.decision !== '–')
 					.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
 
-				top = notMinusParticipants.slice(0, participantsMax ?? notMinusParticipants.length)
+				top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
 				for (let i = top.length; i < participantsMax; i++) {
 					top.push(`${i + 1}.`)
 				}
-				reserve = notMinusParticipants.slice(participantsMax ?? notMinusParticipants.length)
+				reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 			}
 
 			refused = participants.filter(participant => participant.decision === '–').map(({ name }) => `${name} –`)

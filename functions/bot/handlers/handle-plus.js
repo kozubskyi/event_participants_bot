@@ -1,5 +1,5 @@
 const { getEvent, updateEvent } = require('../services/events-api')
-const getFullName = require('../helpers/get-full-name')
+const getName = require('../helpers/get-name')
 const checkRegistrationTime = require('../helpers/check-registration-time')
 const deleteMessage = require('../helpers/delete-message')
 const checkReserveDeadline = require('../helpers/check-reserve-deadline')
@@ -24,11 +24,11 @@ module.exports = async function handlePlus(ctx) {
 
 		const event = await getEvent(credentials)
 
-		const fullName = getFullName(ctx)
+		const userName = getName(ctx)
 
 		if (!event) {
 			await deleteMessage(ctx)
-			await ctx.replyWithHTML(`<b>${fullName}</b>, подія "${title}" вже не актуальна.`)
+			await ctx.replyWithHTML(`<b>${userName}</b>, подія "${title}" вже не актуальна.`)
 			return
 		}
 
@@ -36,21 +36,21 @@ module.exports = async function handlePlus(ctx) {
 
 		let { participantsMax, participants, reserveDeadline } = event
 
-		const currentParticipant = { name: fullName, chatId: ctx.from.id, decision: '+' }
+		const currentParticipant = { name: userName, chatId: ctx.from.id, decision: '+' }
 
 		if (data === PLUS) {
 			const existingPlusIndex = participants.findIndex(
-				({ name, chatId, decision }) => name === fullName && chatId === ctx.from.id && decision === '+'
+				({ name, chatId, decision }) => name === userName && chatId === ctx.from.id && decision === '+'
 			)
 			const existingPlusMinusIndex = participants.findIndex(
-				({ name, chatId, decision }) => name === fullName && chatId === ctx.from.id && decision === '±'
+				({ name, chatId, decision }) => name === userName && chatId === ctx.from.id && decision === '±'
 			)
 			const existingMinusIndex = participants.findIndex(
-				({ name, chatId, decision }) => name === fullName && chatId === ctx.from.id && decision === '–'
+				({ name, chatId, decision }) => name === userName && chatId === ctx.from.id && decision === '–'
 			)
 
 			if (existingPlusIndex + 1) {
-				return await ctx.replyWithHTML(`<b>${fullName}</b>, ви вже є в списку.`)
+				return await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
 			} else if (existingPlusMinusIndex + 1) {
 				participants[existingPlusMinusIndex].decision = '+'
 			} else if (existingMinusIndex + 1) {
@@ -61,12 +61,12 @@ module.exports = async function handlePlus(ctx) {
 			}
 		}
 
-		let currentAddingFriend = { ...currentParticipant, name: `${fullName} +1` }
+		let currentAddingFriend = { ...currentParticipant, name: `${userName} +1` }
 
 		if (data === PLUS_FRIEND) {
 			const lastAddedFriend = [...participants]
 				.reverse()
-				.find(({ chatId, name }) => chatId === ctx.from.id && name.includes(`${fullName} +`))
+				.find(({ chatId, name }) => chatId === ctx.from.id && name.includes(`${userName} +`))
 
 			if (lastAddedFriend) {
 				const lastAddedFriendNumber = Number(
@@ -77,8 +77,8 @@ module.exports = async function handlePlus(ctx) {
 				)
 
 				currentAddingFriend.name = !isNaN(lastAddedFriendNumber)
-					? `${fullName} +${lastAddedFriendNumber + 1}`
-					: `${fullName} +1`
+					? `${userName} +${lastAddedFriendNumber + 1}`
+					: `${userName} +1`
 			}
 
 			participants.push(currentAddingFriend)
@@ -94,7 +94,7 @@ module.exports = async function handlePlus(ctx) {
 
 		if (checkReserveDeadline(reserveDeadline)) {
 			top = participants
-				.filter(participant => participant.decision === '+')
+				.filter(({ decision }) => decision === '+')
 				.map((participant, i) => {
 					if (
 						(data === PLUS && JSON.stringify(currentParticipant) === JSON.stringify(participant)) ||
@@ -108,7 +108,7 @@ module.exports = async function handlePlus(ctx) {
 
 			let reservePlus = []
 			if (top.length > participantsMax) {
-				reservePlus = top.splice(participantsMax ?? top.length)
+				reservePlus = top.splice(participantsMax || top.length)
 			} else {
 				for (let i = top.length; i < participantsMax; i++) {
 					top.push(`${i + 1}.`)
@@ -118,12 +118,12 @@ module.exports = async function handlePlus(ctx) {
 			reserve = [
 				...reservePlus,
 				...participants
-					.filter(participant => participant.decision === '±')
+					.filter(({ decision }) => decision === '±')
 					.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
 			]
 		} else {
 			const notMinusParticipants = participants
-				.filter(participant => participant.decision !== '–')
+				.filter(({ decision }) => decision !== '–')
 				.map((participant, i) => {
 					if (
 						(data === PLUS && JSON.stringify(currentParticipant) === JSON.stringify(participant)) ||
@@ -135,14 +135,14 @@ module.exports = async function handlePlus(ctx) {
 					}
 				})
 
-			top = notMinusParticipants.slice(0, participantsMax ?? notMinusParticipants.length)
+			top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
 			for (let i = top.length; i < participantsMax; i++) {
 				top.push(`${i + 1}.`)
 			}
-			reserve = notMinusParticipants.slice(participantsMax ?? notMinusParticipants.length)
+			reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 		}
 
-		refused = participants.filter(participant => participant.decision === '–').map(({ name }) => `${name} –`)
+		refused = participants.filter(({ decision }) => decision === '–').map(({ name }) => `${name} –`)
 
 		await sendReply(ctx, updatedEvent, { top, reserve, refused })
 	} catch (err) {

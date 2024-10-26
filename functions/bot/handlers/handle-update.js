@@ -1,5 +1,5 @@
 const { getEvent, updateEvent } = require('../services/events-api')
-const getFullName = require('../helpers/get-full-name')
+const getName = require('../helpers/get-name')
 const deleteMessage = require('../helpers/delete-message')
 const checkReserveDeadline = require('../helpers/check-reserve-deadline')
 const { CREATOR_USERNAME } = require('../helpers/constants')
@@ -23,11 +23,11 @@ module.exports = async function handleUpdate(ctx) {
 
 		const event = await getEvent(credentials)
 
-		const fullName = getFullName(ctx)
+		const userName = getName(ctx)
 
 		await deleteMessage(ctx)
 
-		if (!event) return await ctx.replyWithHTML(`<b>${fullName}</b>, подія "${title}" вже не актуальна.`)
+		if (!event) return await ctx.replyWithHTML(`<b>${userName}</b>, подія "${title}" вже не актуальна.`)
 
 		let { reserveDeadline, participantsMax, participants } = event
 
@@ -36,13 +36,11 @@ module.exports = async function handleUpdate(ctx) {
 		let refused = []
 
 		if (checkReserveDeadline(reserveDeadline)) {
-			top = participants
-				.filter(participant => participant.decision === '+')
-				.map((participant, i) => `${i + 1}. ${participant.name}`)
+			top = participants.filter(({ decision }) => decision === '+').map(({ name }, i) => `${i + 1}. ${name}`)
 
 			let reservePlus = []
 			if (top.length > participantsMax) {
-				reservePlus = top.splice(participantsMax ?? top.length)
+				reservePlus = top.splice(participantsMax || top.length)
 			} else {
 				for (let i = top.length; i < participantsMax; i++) {
 					top.push(`${i + 1}.`)
@@ -52,22 +50,22 @@ module.exports = async function handleUpdate(ctx) {
 			reserve = [
 				...reservePlus,
 				...participants
-					.filter(participant => participant.decision === '±')
+					.filter(({ decision }) => decision === '±')
 					.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
 			]
 		} else {
 			const notMinusParticipants = participants
-				.filter(participant => participant.decision !== '–')
+				.filter(({ decision }) => decision !== '–')
 				.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
 
-			top = notMinusParticipants.slice(0, participantsMax ?? notMinusParticipants.length)
+			top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
 			for (let i = top.length; i < participantsMax; i++) {
 				top.push(`${i + 1}.`)
 			}
-			reserve = notMinusParticipants.slice(participantsMax ?? notMinusParticipants.length)
+			reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 		}
 
-		refused = participants.filter(participant => participant.decision === '–').map(({ name }) => `${name} –`)
+		refused = participants.filter(({ decision }) => decision === '–').map(({ name }) => `${name} –`)
 
 		await sendReply(ctx, event, { top, reserve, refused })
 	} catch (err) {
