@@ -1,5 +1,5 @@
 const { getEvent, deleteEvent } = require('../services/events-api')
-const getFullName = require('../helpers/get-full-name')
+const getName = require('../helpers/get-name')
 const deleteMessage = require('../helpers/delete-message')
 const { CREATOR_USERNAME } = require('../helpers/constants')
 const handleError = require('./handle-error')
@@ -21,17 +21,17 @@ module.exports = async function handleFinishEvent(ctx) {
 
 		const event = await getEvent(credentials)
 
-		const fullName = getFullName(ctx)
+		const userName = getName(ctx)
 
 		if (!event) {
 			await deleteMessage(ctx)
-			await ctx.replyWithHTML(`<b>${fullName}</b>, подія "${title}" вже не актуальна.`)
+			await ctx.replyWithHTML(`<b>${userName}</b>, подія "${title}" вже не актуальна.`)
 			return
 		}
 
 		if (ctx.from.username !== event.creatorUsername) {
 			await ctx.replyWithHTML(
-				`<b>${fullName}</b>, завершувати подію може тільки той, хто її створив. В даному випадку це @${event.creatorUsername}.`
+				`<b>${userName}</b>, завершувати подію може тільки той, хто її створив. В даному випадку це @${event.creatorUsername}.`
 			)
 			return
 		}
