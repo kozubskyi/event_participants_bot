@@ -3,7 +3,7 @@ const checkReserveDeadline = require('../helpers/check-reserve-deadline')
 const sendReply = require('../helpers/send-reply')
 const handleError = require('./handle-error')
 
-module.exports = async function handleActiveEvents(ctx) {
+module.exports = async function handleEvents(ctx) {
 	try {
 		const events = await getEvents(ctx.chat.id)
 
@@ -17,9 +17,7 @@ module.exports = async function handleActiveEvents(ctx) {
 			let refused = []
 
 			if (checkReserveDeadline(reserveDeadline)) {
-				top = participants
-					.filter(participant => participant.decision === '+')
-					.map((participant, i) => `${i + 1}. ${participant.name}`)
+				top = participants.filter(({ decision }) => decision === '+').map(({ name }, i) => `${i + 1}. ${name}`)
 
 				let reservePlus = []
 				if (top.length > participantsMax) {
@@ -33,12 +31,12 @@ module.exports = async function handleActiveEvents(ctx) {
 				reserve = [
 					...reservePlus,
 					...participants
-						.filter(participant => participant.decision === '±')
+						.filter(({ decision }) => decision === '±')
 						.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
 				]
 			} else {
 				const notMinusParticipants = participants
-					.filter(participant => participant.decision !== '–')
+					.filter(({ decision }) => decision !== '–')
 					.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
 
 				top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
@@ -48,7 +46,7 @@ module.exports = async function handleActiveEvents(ctx) {
 				reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 			}
 
-			refused = participants.filter(participant => participant.decision === '–').map(({ name }) => `${name} –`)
+			refused = participants.filter(({ decision }) => decision === '–').map(({ name }) => `${name} –`)
 
 			await sendReply(ctx, event, { top, reserve, refused })
 		})
