@@ -36,8 +36,11 @@ module.exports = async function handleFinishEvent(ctx) {
 			return
 		}
 
-		await deleteEvent(credentials)
+		const deletedEvent = await deleteEvent(credentials)
+
 		await deleteMessage(ctx)
+
+		if (deletedEvent) await ctx.reply(`Подія "${title}" успішно видалена.`)
 	} catch (err) {
 		await handleError({ ctx, err })
 	}
