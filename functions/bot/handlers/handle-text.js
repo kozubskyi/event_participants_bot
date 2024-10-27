@@ -21,7 +21,7 @@ module.exports = async function handleText(ctx) {
 				.reduce((acc, line) => {
 					const [key, value] = line.split(': ')
 
-					if (key) acc[key] = isNaN(value) ? value : Number(value)
+					if (key) acc[key] = isNaN(value) ? value.trim() : Number(value)
 
 					return acc
 				}, {})
