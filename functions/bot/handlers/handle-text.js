@@ -31,7 +31,7 @@ module.exports = async function handleText(ctx) {
 			if (!title || !start) return await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, невірно введені дані.`)
 
 			const now = new Date()
-			const kyivOffset = 3 * 60 * 60 * 1000
+			const kyivOffset = 2 * 60 * 60 * 1000
 			const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
 			// const nowInKyiv = new Date()
 
@@ -108,7 +108,7 @@ module.exports = async function handleText(ctx) {
 			if (!event) return await ctx.replyWithHTML(`<b>${userName}</b>, такої події немає в базі даних.`)
 
 			const now = new Date()
-			const kyivOffset = 3 * 60 * 60 * 1000
+			const kyivOffset = 2 * 60 * 60 * 1000
 			const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
 			// const nowInKyiv = new Date()
 

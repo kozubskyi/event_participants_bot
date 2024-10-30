@@ -5,7 +5,7 @@ module.exports = async function checkRegistrationTime(ctx, event) {
 	const { registrationStart, registrationEnd } = event
 
 	const now = new Date()
-	const kyivOffset = 3 * 60 * 60 * 1000
+	const kyivOffset = 2 * 60 * 60 * 1000
 	const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
 	// const nowInKyiv = new Date()
 
