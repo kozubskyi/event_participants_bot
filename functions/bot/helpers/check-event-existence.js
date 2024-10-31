@@ -14,7 +14,7 @@ module.exports = async function checkEventExistence(ctx) {
 
 	if (!event) {
 		await deleteMessage(ctx)
-		await ctx.replyWithHTML(`<b>${getName(ctx)}</b>, подія "${title}" вже не актуальна.`)
+		await ctx.replyWithHTML(`<b>${getName(ctx)}</b>, подія <b>${title}</b> вже не актуальна.`)
 		return false
 	}
 

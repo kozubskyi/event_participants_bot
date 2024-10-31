@@ -7,13 +7,49 @@ const sendReply = require('../helpers/send-reply')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 // const cron = require('node-cron')
 // const getCronExp = require('../helpers/get-cron-expression')
-const { CREATOR_CHAT_ID } = require('../helpers/constants')
 const handleError = require('./handle-error')
+
+const checkDates = async (event, ctx) => {
+	const { start, end, registrationEnd } = event
+	const name = getName(ctx)
+
+	const now = DateTime.now()
+	const startDate = getDate(start)
+	const endDate = getDate(end)
+	const registrationEndDate = getDate(registrationEnd)
+
+	if (startDate && startDate < now) {
+		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, старт події не може бути раніше ніж дата та час станом на зараз.`)
+		return
+	}
+
+	if (endDate && endDate < now) {
+		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, кінець події не може бути раніше ніж дата та час станом на зараз.`)
+		return
+	}
+
+	if (registrationEnd && registrationEnd < now) {
+		await ctx.replyWithHTML(
+			`⚠️ <b>${name}</b>, кінець періоду реєстрації не може бути раніше ніж дата та час станом на зараз.`
+		)
+		return
+	}
+
+	if (endDate && startDate && endDate < start) {
+		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, кінець події не може бути раніше ніж її початок.`)
+		return
+	}
+
+	if (endDate && registrationEndDate && endDate < registrationEndDate) {
+		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, кінець події не може бути раніше ніж кінець реєстрації.`)
+		return
+	}
+
+	return true
+}
 
 module.exports = async function handleText(ctx) {
 	try {
-		const userName = getName(ctx)
-
 		const firstString = ctx.message.text.split('\n')[0]
 
 		if (firstString === 'CREATE_EVENT') {
@@ -28,56 +64,22 @@ module.exports = async function handleText(ctx) {
 					return acc
 				}, {})
 
-			const { title, start, end, reserveDeadline, registrationEnd, participantsMin, participantsMax } = event
+			const { title, start, participantsMax } = event
 
-			if (!title || !start) return await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, невірно введені дані.`)
-
-			const now = new Date()
-			const kyivOffset = 2 * 60 * 60 * 1000
-			const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
-			// const nowInKyiv = new Date()
-
-			const luxonNow = DateTime.now()
-			const luxonStartDate = DateTime.fromFormat(start, 'dd.MM.yyyy, HH:mm', { zone: 'Europe/Kyiv' })
-			if (ctx.chat.id === CREATOR_CHAT_ID)
-				await ctx.reply(`${luxonNow}\n${luxonStartDate}\n\n${luxonNow > luxonStartDate}`)
-
-			const startDate = getDate(start)
-			if (nowInKyiv >= startDate) {
-				return await ctx.replyWithHTML(
-					`⚠️ <b>${userName}</b>, старт події не може бути раніше ніж дата та час станом на зараз.`
-				)
+			if (!title || !start) {
+				await ctx.replyWithHTML(`⚠️ <b>${getName(ctx)}</b>, невірно введені дані, поля title та start є обов'язковими.`)
+				return
 			}
 
-			if (end) {
-				const endDate = getDate(end)
-				if (nowInKyiv >= endDate) {
-					return await ctx.replyWithHTML(
-						`⚠️ <b>${userName}</b>, кінець події не може бути раніше ніж дата та час станом на зараз.`
-					)
-				}
-			}
-
-			if (registrationEnd) {
-				const registrationEndDate = getDate(registrationEnd)
-				if (nowInKyiv >= registrationEndDate) {
-					return await ctx.replyWithHTML(
-						`⚠️ <b>${userName}</b>, кінець періоду реєстрації не може бути раніше ніж дата та час станом на зараз.`
-					)
-				}
-			}
+			if (!(await checkDates(event, ctx))) return
 
 			event.chatId = ctx.chat.id
-			event.chatTitle = ctx.chat?.title
+			event.chatTitle = ctx.chat.title
 			event.creatorUsername = ctx.from?.username
 
 			const createdEvent = await createEvent(event)
 
-			let top = []
-
-			if (participantsMax) {
-				top = Array.from({ length: participantsMax }, (el, i) => `${i + 1}.`)
-			}
+			const top = participantsMax ? Array.from({ length: participantsMax }, (el, i) => `${i + 1}.`) : []
 
 			await sendReply(ctx, createdEvent, { top })
 			await sendInfoMessageToCreator(ctx)
@@ -86,6 +88,13 @@ module.exports = async function handleText(ctx) {
 		if (firstString === 'UPDATE_EVENT') {
 			const splitted = ctx.message.text.split('\n')
 			const index = splitted.indexOf('')
+
+			const userName = getName(ctx)
+
+			if (index < 0) {
+				await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, не введені поля, які потрібно оновити.`)
+				return
+			}
 
 			const searchedEvent = splitted.slice(1, index).reduce((acc, line) => {
 				const [key, value] = line.split(': ')
@@ -112,41 +121,12 @@ module.exports = async function handleText(ctx) {
 
 			const event = await getEvent(searchedEvent)
 
-			if (!event) return await ctx.replyWithHTML(`<b>${userName}</b>, такої події немає в базі даних.`)
-
-			const now = new Date()
-			const kyivOffset = 2 * 60 * 60 * 1000
-			const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
-			// const nowInKyiv = new Date()
-
-			const { start, end, registrationEnd } = fieldsToUpdate
-
-			if (start) {
-				const startDate = getDate(start)
-				if (nowInKyiv >= startDate) {
-					return await ctx.replyWithHTML(
-						`⚠️ <b>${userName}</b>, старт події не може бути раніше ніж дата та час станом на зараз.`
-					)
-				}
+			if (!event) {
+				await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, події <b>${searchedEvent.title}</b> немає в базі даних.`)
+				return
 			}
 
-			if (end) {
-				const endDate = getDate(end)
-				if (nowInKyiv >= endDate) {
-					return await ctx.replyWithHTML(
-						`⚠️ <b>${userName}</b>, кінець події не може бути раніше ніж дата та час станом на зараз.`
-					)
-				}
-			}
-
-			if (registrationEnd) {
-				const registrationEndDate = getDate(registrationEnd)
-				if (nowInKyiv >= registrationEndDate) {
-					return await ctx.replyWithHTML(
-						`⚠️ <b>${userName}</b>, кінець періоду реєстрації не може бути раніше ніж дата та час станом на зараз.`
-					)
-				}
-			}
+			if (!(await checkDates(event, ctx))) return
 
 			const updatedEvent = await updateEvent(searchedEvent, fieldsToUpdate)
 

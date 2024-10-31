@@ -10,9 +10,13 @@ module.exports = async function handleFinishEvent(ctx) {
 		const event = await checkEventExistence(ctx)
 		if (!event) return
 
+		const name = getName(ctx)
+
 		if (ctx.from.username !== event.creatorUsername) {
 			await ctx.replyWithHTML(
-				`<b>${userName}</b>, завершувати подію може тільки той, хто її створив. В даному випадку це @${event.creatorUsername}.`
+				`<b>${name}</b>, завершувати подію може тільки той, хто її створив.${
+					event.creatorUsername ? ` В даному випадку це @${event.creatorUsername}.` : ''
+				}`
 			)
 			return
 		}
@@ -23,7 +27,7 @@ module.exports = async function handleFinishEvent(ctx) {
 
 		await deleteMessage(ctx)
 
-		if (deletedEvent) await ctx.reply(`Подія "${title}" успішно видалена.`)
+		if (deletedEvent) await ctx.replyWithHTML(`Подія <b>${title}</b> успішно видалена.`)
 	} catch (err) {
 		await handleError({ ctx, err })
 	}
