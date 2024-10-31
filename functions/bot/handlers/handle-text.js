@@ -39,7 +39,8 @@ module.exports = async function handleText(ctx) {
 
 			const luxonNow = DateTime.now()
 			const luxonStartDate = DateTime.fromFormat(start, 'dd.MM.yyyy, HH:mm', { zone: 'Europe/Kyiv' })
-			if (ctx.chat.id === CREATOR_CHAT_ID) await ctx.reply(`${luxonNow}\n${luxonStartDate}`)
+			if (ctx.chat.id === CREATOR_CHAT_ID)
+				await ctx.reply(`${luxonNow}\n${luxonStartDate}\n\n${luxonNow > luxonStartDate}`)
 
 			const startDate = getDate(start)
 			if (nowInKyiv >= startDate) {
