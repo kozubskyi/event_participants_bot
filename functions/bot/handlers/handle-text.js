@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon')
 const getName = require('../helpers/get-name')
 const { createEvent, getEvent, updateEvent, deleteEvent } = require('../services/events-api')
 const getDate = require('../helpers/get-date')
@@ -6,6 +7,7 @@ const sendReply = require('../helpers/send-reply')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 // const cron = require('node-cron')
 // const getCronExp = require('../helpers/get-cron-expression')
+const { CREATOR_CHAT_ID } = require('../helpers/constants')
 const handleError = require('./handle-error')
 
 module.exports = async function handleText(ctx) {
@@ -34,6 +36,10 @@ module.exports = async function handleText(ctx) {
 			const kyivOffset = 2 * 60 * 60 * 1000
 			const nowInKyiv = new Date(now.getTime() + kyivOffset - now.getTimezoneOffset() * 60 * 1000)
 			// const nowInKyiv = new Date()
+
+			const luxonNow = DateTime.now()
+			const luxonStartDate = DateTime.fromFormat(start, 'dd.MM.yyyy, HH:mm', { zone: 'Europe/Kyiv' })
+			if (ctx.chat.id === CREATOR_CHAT_ID) await ctx.reply(`${luxonNow}\n${luxonStartDate}`)
 
 			const startDate = getDate(start)
 			if (nowInKyiv >= startDate) {
