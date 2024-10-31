@@ -19,7 +19,7 @@ module.exports = async function handlePlusMinus(ctx) {
 
 		const userName = getName(ctx)
 
-		const currentParticipant = { name: userName, chatId, decision: '±' }
+		const currentParticipant = { name: userName, chatId: ctx.from.id, decision: '±' }
 
 		const { data } = ctx.callbackQuery
 
