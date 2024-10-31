@@ -13,10 +13,7 @@ const {
 } = require('./buttons')
 const getDate = require('./get-date')
 
-module.exports = async function sendReply(ctx, event, preparedParticipants) {
-	const { reserveDeadline } = event
-	const { top = [], reserve = [], refused = [] } = preparedParticipants
-
+module.exports = async function sendReply(ctx, event, { top = [], reserve = [], refused = [] }) {
 	const reply = `
 ${getHeader(event)}
 
@@ -28,7 +25,6 @@ ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n$
 	let buttons = Markup.inlineKeyboard([
 		[PLUS_BUTTON, PLUS_MINUS_BUTTON, MINUS_BUTTON],
 		[PLUS_FRIEND_BUTTON, PLUS_MINUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
-		// [SETTINGS_BUTTON, FINISH_EVENT_BUTTON],
 		[UPDATE_BUTTON],
 		[FINISH_EVENT_BUTTON],
 	])

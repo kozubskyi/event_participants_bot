@@ -1,4 +1,5 @@
-const { getEvent, deleteEvent } = require('../services/events-api')
+const checkEventExistence = require('../helpers/check-event-existence')
+const { deleteEvent } = require('../services/events-api')
 const getName = require('../helpers/get-name')
 const deleteMessage = require('../helpers/delete-message')
 const { CREATOR_USERNAME } = require('../helpers/constants')
@@ -6,28 +7,8 @@ const handleError = require('./handle-error')
 
 module.exports = async function handleFinishEvent(ctx) {
 	try {
-		const { message, data } = ctx.callbackQuery
-
-		const splitted = message.text.split('\n')
-
-		const title = splitted[0]
-		const start = splitted.find(el => el.includes('Початок:')).replace('Початок: ', '')
-
-		const credentials = {
-			chatId: ctx.chat.id,
-			title,
-			start,
-		}
-
-		const event = await getEvent(credentials)
-
-		const userName = getName(ctx)
-
-		if (!event) {
-			await deleteMessage(ctx)
-			await ctx.replyWithHTML(`<b>${userName}</b>, подія "${title}" вже не актуальна.`)
-			return
-		}
+		const event = await checkEventExistence(ctx)
+		if (!event) return
 
 		if (ctx.from.username !== event.creatorUsername) {
 			await ctx.replyWithHTML(
@@ -36,7 +17,9 @@ module.exports = async function handleFinishEvent(ctx) {
 			return
 		}
 
-		const deletedEvent = await deleteEvent(credentials)
+		const { chatId, title, start } = event
+
+		const deletedEvent = await deleteEvent({ chatId, title, start })
 
 		await deleteMessage(ctx)
 

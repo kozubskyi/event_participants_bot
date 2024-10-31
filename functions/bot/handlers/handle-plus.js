@@ -1,4 +1,5 @@
-const { getEvent, updateEvent } = require('../services/events-api')
+const checkEventExistence = require('../helpers/check-event-existence')
+const { updateEvent } = require('../services/events-api')
 const getName = require('../helpers/get-name')
 const checkRegistrationTime = require('../helpers/check-registration-time')
 const deleteMessage = require('../helpers/delete-message')
@@ -9,34 +10,18 @@ const handleError = require('./handle-error')
 
 module.exports = async function handlePlus(ctx) {
 	try {
-		const { message, data } = ctx.callbackQuery
-
-		const splitted = message.text.split('\n')
-
-		const title = splitted[0]
-		const start = splitted.find(el => el.includes('Початок:')).replace('Початок: ', '')
-
-		const credentials = {
-			chatId: ctx.chat.id,
-			title,
-			start,
-		}
-
-		const event = await getEvent(credentials)
-
-		const userName = getName(ctx)
-
-		if (!event) {
-			await deleteMessage(ctx)
-			await ctx.replyWithHTML(`<b>${userName}</b>, подія "${title}" вже не актуальна.`)
-			return
-		}
+		const event = await checkEventExistence(ctx)
+		if (!event) return
 
 		if (!(await checkRegistrationTime(ctx, event))) return
 
-		let { participantsMax, participants, reserveDeadline } = event
+		const { title, start, chatId, participantsMax, participants, reserveDeadline } = event
 
-		const currentParticipant = { name: userName, chatId: ctx.from.id, decision: '+' }
+		const userName = getName(ctx)
+
+		const currentParticipant = { name: userName, chatId, decision: '+' }
+
+		const { data } = ctx.callbackQuery
 
 		if (data === PLUS) {
 			const existingPlusIndex = participants.findIndex(
@@ -84,7 +69,7 @@ module.exports = async function handlePlus(ctx) {
 			participants.push(currentAddingFriend)
 		}
 
-		const updatedEvent = await updateEvent(credentials, { participants })
+		const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
 
 		await deleteMessage(ctx)
 
