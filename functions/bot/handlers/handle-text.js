@@ -1,9 +1,6 @@
 const { DateTime } = require('luxon')
-const getName = require('../helpers/get-name')
+const { getName, getDate, checkReserveDeadline, prepareParticipants, sendReply } = require('../helpers/helpers')
 const { createEvent, getEvent, updateEvent, deleteEvent } = require('../services/events-api')
-const getDate = require('../helpers/get-date')
-const checkReserveDeadline = require('../helpers/check-reserve-deadline')
-const sendReply = require('../helpers/send-reply')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 // const cron = require('node-cron')
 // const getCronExp = require('../helpers/get-cron-expression')
@@ -11,7 +8,7 @@ const handleError = require('./handle-error')
 
 const checkDates = async (event, ctx) => {
 	const { start, end, registrationEnd } = event
-	const name = getName(ctx)
+	const name = getName(ctx.from)
 
 	const now = DateTime.now()
 	const startDate = getDate(start)
@@ -28,20 +25,20 @@ const checkDates = async (event, ctx) => {
 		return
 	}
 
-	if (registrationEnd && registrationEnd < now) {
-		await ctx.replyWithHTML(
-			`⚠️ <b>${name}</b>, кінець періоду реєстрації не може бути раніше ніж дата та час станом на зараз.`
-		)
-		return
-	}
-
-	if (endDate && startDate && endDate < start) {
+	if (endDate && startDate && endDate < startDate) {
 		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, кінець події не може бути раніше ніж її початок.`)
 		return
 	}
 
 	if (endDate && registrationEndDate && endDate < registrationEndDate) {
 		await ctx.replyWithHTML(`⚠️ <b>${name}</b>, кінець події не може бути раніше ніж кінець реєстрації.`)
+		return
+	}
+
+	if (registrationEnd && registrationEndDate < now) {
+		await ctx.replyWithHTML(
+			`⚠️ <b>${name}</b>, кінець періоду реєстрації не може бути раніше ніж дата та час станом на зараз.`
+		)
 		return
 	}
 
@@ -67,7 +64,9 @@ module.exports = async function handleText(ctx) {
 			const { title, start, participantsMax } = event
 
 			if (!title || !start) {
-				await ctx.replyWithHTML(`⚠️ <b>${getName(ctx)}</b>, невірно введені дані, поля title та start є обов'язковими.`)
+				await ctx.replyWithHTML(
+					`⚠️ <b>${getName(ctx.from)}</b>, невірно введені дані, поля title та start є обов'язковими.`
+				)
 				return
 			}
 
@@ -75,7 +74,13 @@ module.exports = async function handleText(ctx) {
 
 			event.chatId = ctx.chat.id
 			event.chatTitle = ctx.chat.title
-			event.creatorUsername = ctx.from?.username
+			event.creator = {
+				name: getName(ctx.from),
+				chatId: ctx.from.id,
+				username: ctx.from.username,
+				first_name: ctx.from.first_name,
+				last_name: ctx.from.last_name,
+			}
 
 			const createdEvent = await createEvent(event)
 
@@ -89,10 +94,10 @@ module.exports = async function handleText(ctx) {
 			const splitted = ctx.message.text.split('\n')
 			const index = splitted.indexOf('')
 
-			const userName = getName(ctx)
+			const userName = getName(ctx.from)
 
 			if (index < 0) {
-				await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, не введені поля, які потрібно оновити.`)
+				await ctx.replyWithHTML(`⚠️ <b>${userName}</b>, не введено поля, які потрібно оновити.`)
 				return
 			}
 
@@ -113,7 +118,7 @@ module.exports = async function handleText(ctx) {
 
 			if (!searchedEvent.title || !searchedEvent.start) {
 				return await ctx.replyWithHTML(
-					`⚠️ <b>${userName}</b>, невірно введені пошукові дані, поля title та start є обов'язковими.`
+					`⚠️ <b>${userName}</b>, невірно введено пошукові дані, поля title та start є обов'язковими.`
 				)
 			}
 
@@ -130,43 +135,7 @@ module.exports = async function handleText(ctx) {
 
 			const updatedEvent = await updateEvent(searchedEvent, fieldsToUpdate)
 
-			let { reserveDeadline, participantsMax, participants } = updatedEvent
-
-			let top = []
-			let reserve = []
-			let refused = []
-
-			if (checkReserveDeadline(reserveDeadline)) {
-				top = participants.filter(({ decision }) => decision === '+').map(({ name }, i) => `${i + 1}. ${name}`)
-
-				let reservePlus = []
-				if (top.length > participantsMax) {
-					reservePlus = top.splice(participantsMax || top.length)
-				} else {
-					for (let i = top.length; i < participantsMax; i++) {
-						top.push(`${i + 1}.`)
-					}
-				}
-
-				reserve = [
-					...reservePlus,
-					...participants
-						.filter(({ decision }) => decision === '±')
-						.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
-				]
-			} else {
-				const notMinusParticipants = participants
-					.filter(({ decision }) => decision !== '–')
-					.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
-
-				top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
-				for (let i = top.length; i < participantsMax; i++) {
-					top.push(`${i + 1}.`)
-				}
-				reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
-			}
-
-			refused = participants.filter(({ decision }) => decision === '–').map(({ name }) => `${name} –`)
+			const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
 
 			await sendReply(ctx, updatedEvent, { top, reserve, refused })
 		}

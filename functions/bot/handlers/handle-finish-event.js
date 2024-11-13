@@ -1,6 +1,5 @@
-const checkEventExistence = require('../helpers/check-event-existence')
+const { getName, checkEventExistence } = require('../helpers/helpers')
 const { deleteEvent } = require('../services/events-api')
-const getName = require('../helpers/get-name')
 const deleteMessage = require('../helpers/delete-message')
 const { CREATOR_USERNAME } = require('../helpers/constants')
 const handleError = require('./handle-error')
@@ -10,12 +9,14 @@ module.exports = async function handleFinishEvent(ctx) {
 		const event = await checkEventExistence(ctx)
 		if (!event) return
 
-		const name = getName(ctx)
+		const name = getName(ctx.from)
 
-		if (ctx.from.username !== event.creatorUsername) {
+		if (ctx.from.id !== event.creator.chatId) {
+			const { username } = event.creator
+
 			await ctx.replyWithHTML(
 				`<b>${name}</b>, завершувати подію може тільки той, хто її створив.${
-					event.creatorUsername ? ` В даному випадку це @${event.creatorUsername}.` : ''
+					username ? ` В даному випадку це @${username}.` : ''
 				}`
 			)
 			return
