@@ -197,7 +197,7 @@ ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n$
 	}
 `
 
-	let buttons = Markup.inlineKeyboard([
+	const buttons = Markup.inlineKeyboard([
 		[PLUS_BUTTON, PLUS_MINUS_BUTTON, MINUS_BUTTON],
 		[PLUS_FRIEND_BUTTON, PLUS_MINUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
 		[UPDATE_BUTTON],

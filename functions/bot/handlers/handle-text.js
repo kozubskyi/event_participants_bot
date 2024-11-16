@@ -1,6 +1,6 @@
 const { DateTime } = require('luxon')
 const { getName, getDate, checkReserveDeadline, prepareParticipants, sendReply } = require('../helpers/helpers')
-const { createEvent, getEvent, updateEvent, deleteEvent } = require('../services/events-api')
+const { createEvent, getEvent, updateEvent, deleteEvent, getEvents } = require('../services/events-api')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 // const cron = require('node-cron')
 // const getCronExp = require('../helpers/get-cron-expression')
@@ -134,6 +134,50 @@ module.exports = async function handleText(ctx) {
 			if (!(await checkDates(event, ctx))) return
 
 			const updatedEvent = await updateEvent(searchedEvent, fieldsToUpdate)
+
+			const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
+
+			await sendReply(ctx, updatedEvent, { top, reserve, refused })
+		}
+
+		const possibleParticipantArr = firstString.split(' ')
+		const decisions = ['+', '±', '–', '-']
+		let decision = possibleParticipantArr.splice(possibleParticipantArr.length - 1, 1)[0]
+
+		if (possibleParticipantArr.length >= 1 && possibleParticipantArr.length <= 3 && decisions.includes(decision)) {
+			const events = await getEvents(ctx.chat.id)
+
+			if (events.length !== 1) return
+
+			const { chatId, title, start, participants } = events[0]
+			decision = decision === '-' ? '–' : decision
+
+			const newParticipant = {
+				name: possibleParticipantArr.join(' '),
+				chatId: null,
+				// chatId: ctx.from.id,
+				username: null,
+				first_name: null,
+				last_name: null,
+				decision,
+			}
+
+			const existingIndex = participants.findIndex(({ name }) => name === newParticipant.name)
+			const existing = participants[existingIndex]
+
+			if (!existing) {
+				participants.push(newParticipant)
+			} else if (decision === existing.decision) {
+				// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+				return
+			} else if ((decision !== '–' && existing.decision === '–') || (decision === '–' && existing.decision !== '–')) {
+				participants.splice(existingIndex, 1)
+				participants.push(newParticipant)
+			} else if (existing.decision !== '–' && decision !== '–') {
+				participants[existingIndex].decision = decision
+			}
+
+			const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
 
 			const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
 
