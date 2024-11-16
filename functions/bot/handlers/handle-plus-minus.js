@@ -30,16 +30,28 @@ module.exports = async function handlePlusMinus(ctx) {
 			const index = participants.findIndex(({ name, chatId }) => name === userName && chatId === id)
 			const existing = participants[index]
 
-			if (existing?.decision === '+') {
-				participants[index].decision = '±'
-			} else if (existing?.decision === '±') {
-				// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
-				return
-			} else if (existing?.decision === '–') {
-				participants.splice(index, 1)
-				participants.push(currentParticipant)
+			if (checkReserveDeadline(reserveDeadline)) {
+				if (existing && existing.decision === '±') {
+					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+					return
+				} else if (existing && existing.decision !== '±') {
+					participants.splice(index, 1)
+					participants.push(currentParticipant)
+				} else {
+					participants.push(currentParticipant)
+				}
 			} else {
-				participants.push(currentParticipant)
+				if (existing?.decision === '+') {
+					participants[index].decision = '±'
+				} else if (existing?.decision === '±') {
+					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+					return
+				} else if (existing?.decision === '–') {
+					participants.splice(index, 1)
+					participants.push(currentParticipant)
+				} else {
+					participants.push(currentParticipant)
+				}
 			}
 		}
 		if (data === PLUS_MINUS_FRIEND) {

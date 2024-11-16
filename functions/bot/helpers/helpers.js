@@ -112,7 +112,7 @@ const addFriend = (ctx, participants) => {
 }
 
 const prepareParticipants = (event, ctx) => {
-	const { reserveDeadline, participantsMax, participants } = event
+	const { reserveDeadline, participantsMax, participantsMin, participants } = event
 
 	let top = []
 	let reserve = []
@@ -123,11 +123,17 @@ const prepareParticipants = (event, ctx) => {
 		// .map(({ chatId, name }, i) => `${i + 1}. <a href="tg://user?id=${chatId}">${name}</a>`)
 
 		let reservePlus = []
-		if (top.length > participantsMax) {
+		if (participantsMax && top.length > participantsMax) {
 			reservePlus = top.splice(participantsMax || top.length)
 		} else {
-			for (let i = top.length; i < participantsMax; i++) {
-				top.push(`${i + 1}.`)
+			if (participantsMax) {
+				for (let i = top.length; i < participantsMax; i++) {
+					top.push(`${i + 1}.`)
+				}
+			} else if (participantsMin) {
+				for (let i = top.length; i < participantsMin; i++) {
+					top.push(`${i + 1}.`)
+				}
 			}
 		}
 
@@ -151,8 +157,14 @@ const prepareParticipants = (event, ctx) => {
 		// )
 
 		top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
-		for (let i = top.length; i < participantsMax; i++) {
-			top.push(`${i + 1}.`)
+		if (participantsMax) {
+			for (let i = top.length; i < participantsMax; i++) {
+				top.push(`${i + 1}.`)
+			}
+		} else if (participantsMin) {
+			for (let i = top.length; i < participantsMin; i++) {
+				top.push(`${i + 1}.`)
+			}
 		}
 		reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 	}

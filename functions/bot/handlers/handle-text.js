@@ -61,7 +61,7 @@ module.exports = async function handleText(ctx) {
 					return acc
 				}, {})
 
-			const { title, start, participantsMax } = event
+			const { title, start, participantsMax, participantsMin } = event
 
 			if (!title || !start) {
 				await ctx.replyWithHTML(
@@ -84,7 +84,10 @@ module.exports = async function handleText(ctx) {
 
 			const createdEvent = await createEvent(event)
 
-			const top = participantsMax ? Array.from({ length: participantsMax }, (el, i) => `${i + 1}.`) : []
+			const top =
+				participantsMax || participantsMin
+					? Array.from({ length: participantsMax || participantsMin }, (el, i) => `${i + 1}.`)
+					: []
 
 			await sendReply(ctx, createdEvent, { top })
 			await sendInfoMessageToCreator(ctx)
@@ -149,7 +152,7 @@ module.exports = async function handleText(ctx) {
 
 			if (events.length !== 1) return
 
-			const { chatId, title, start, participants } = events[0]
+			const { chatId, title, start, participants, reserveDeadline } = events[0]
 			decision = decision === '-' ? '–' : decision
 
 			const newParticipant = {
@@ -165,16 +168,28 @@ module.exports = async function handleText(ctx) {
 			const existingIndex = participants.findIndex(({ name }) => name === newParticipant.name)
 			const existing = participants[existingIndex]
 
-			if (!existing) {
-				participants.push(newParticipant)
-			} else if (decision === existing.decision) {
-				// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
-				return
-			} else if ((decision !== '–' && existing.decision === '–') || (decision === '–' && existing.decision !== '–')) {
-				participants.splice(existingIndex, 1)
-				participants.push(newParticipant)
-			} else if (existing.decision !== '–' && decision !== '–') {
-				participants[existingIndex].decision = decision
+			if (checkReserveDeadline(reserveDeadline)) {
+				if (!existing) {
+					participants.push(newParticipant)
+				} else if (decision === existing.decision) {
+					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+					return
+				} else {
+					participants.splice(existingIndex, 1)
+					participants.push(newParticipant)
+				}
+			} else {
+				if (!existing) {
+					participants.push(newParticipant)
+				} else if (decision === existing.decision) {
+					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+					return
+				} else if ((decision !== '–' && existing.decision === '–') || (decision === '–' && existing.decision !== '–')) {
+					participants.splice(existingIndex, 1)
+					participants.push(newParticipant)
+				} else if (existing.decision !== '–' && decision !== '–') {
+					participants[existingIndex].decision = decision
+				}
 			}
 
 			const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
