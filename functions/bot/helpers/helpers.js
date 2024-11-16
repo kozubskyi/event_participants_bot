@@ -119,9 +119,8 @@ const prepareParticipants = (event, ctx) => {
 	let refused = []
 
 	if (checkReserveDeadline(reserveDeadline)) {
-		top = participants
-			.filter(({ decision }) => decision === '+')
-			.map(({ chatId, name }, i) => `${i + 1}. <a href="tg://user?id=${chatId}">${name}</a>`)
+		top = participants.filter(({ decision }) => decision === '+').map(({ name }, i) => `${i + 1}. ${name}`)
+		// .map(({ chatId, name }, i) => `${i + 1}. <a href="tg://user?id=${chatId}">${name}</a>`)
 
 		let reservePlus = []
 		if (top.length > participantsMax) {
@@ -136,18 +135,20 @@ const prepareParticipants = (event, ctx) => {
 			...reservePlus,
 			...participants
 				.filter(({ decision }) => decision === '±')
-				.map(
-					({ chatId, name }, i) =>
-						`${top.length + reservePlus.length + i + 1}. <a href="tg://user?id=${chatId}">${name}</a> ±`
-				),
+				.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
+			// .map(
+			// 	({ chatId, name }, i) =>
+			// 		`${top.length + reservePlus.length + i + 1}. <a href="tg://user?id=${chatId}">${name}</a> ±`
+			// ),
 		]
 	} else {
 		const notMinusParticipants = participants
 			.filter(({ decision }) => decision !== '–')
-			.map(
-				({ chatId, name, decision }, i) =>
-					`${i + 1}. <a href="tg://user?id=${chatId}">${name}</a> ${decision === '±' ? '±' : ''}`
-			)
+			.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
+		// .map(
+		// 	({ chatId, name, decision }, i) =>
+		// 		`${i + 1}. <a href="tg://user?id=${chatId}">${name}</a> ${decision === '±' ? '±' : ''}`
+		// )
 
 		top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
 		for (let i = top.length; i < participantsMax; i++) {
@@ -156,9 +157,8 @@ const prepareParticipants = (event, ctx) => {
 		reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
 	}
 
-	refused = participants
-		.filter(({ decision }) => decision === '–')
-		.map(({ chatId, name }) => `<a href="tg://user?id=${chatId}">${name}</a> –`)
+	refused = participants.filter(({ decision }) => decision === '–').map(({ name }) => `${name} –`)
+	// .map(({ chatId, name }) => `<a href="tg://user?id=${chatId}">${name}</a> –`)
 
 	return { top, reserve, refused }
 }
