@@ -49,6 +49,8 @@ module.exports = async function handleText(ctx) {
 	try {
 		const firstString = ctx.message.text.split('\n')[0]
 
+		//* Event create
+
 		if (firstString === 'CREATE_EVENT') {
 			const event = ctx.message.text
 				.split('\n')
@@ -92,6 +94,8 @@ module.exports = async function handleText(ctx) {
 			await sendReply(ctx, createdEvent, { top })
 			await sendInfoMessageToCreator(ctx)
 		}
+
+		//* Event update
 
 		if (firstString === 'UPDATE_EVENT') {
 			const splitted = ctx.message.text.split('\n')
@@ -143,61 +147,65 @@ module.exports = async function handleText(ctx) {
 			await sendReply(ctx, updatedEvent, { top, reserve, refused })
 		}
 
-		const possibleParticipantArr = firstString.split(' ')
-		const decisions = ['+', '±', '–', '-']
-		let decision = possibleParticipantArr.splice(possibleParticipantArr.length - 1, 1)[0]
+		//* Adding by text
 
-		if (possibleParticipantArr.length >= 1 && possibleParticipantArr.length <= 3 && decisions.includes(decision)) {
-			const events = await getEvents(ctx.chat.id)
+		// const possibleParticipantArr = firstString.split(' ')
+		// const decisions = ['+', '±', '–', '-']
+		// let decision = possibleParticipantArr.splice(possibleParticipantArr.length - 1, 1)[0]
 
-			if (events.length !== 1) return
+		// if (possibleParticipantArr.length >= 1 && possibleParticipantArr.length <= 3 && decisions.includes(decision)) {
+		// 	const events = await getEvents(ctx.chat.id)
 
-			const { chatId, title, start, participants, reserveDeadline } = events[0]
-			decision = decision === '-' ? '–' : decision
+		// 	if (events.length !== 1) return
 
-			const newParticipant = {
-				name: possibleParticipantArr.join(' '),
-				chatId: null,
-				// chatId: ctx.from.id,
-				username: null,
-				first_name: null,
-				last_name: null,
-				decision,
-			}
+		// 	const { chatId, title, start, participants, reserveDeadline } = events[0]
+		// 	decision = decision === '-' ? '–' : decision
 
-			const existingIndex = participants.findIndex(({ name }) => name === newParticipant.name)
-			const existing = participants[existingIndex]
+		// 	const newParticipant = {
+		// 		name: possibleParticipantArr.join(' '),
+		// 		chatId: null,
+		// 		// chatId: ctx.from.id,
+		// 		username: null,
+		// 		first_name: null,
+		// 		last_name: null,
+		// 		decision,
+		// 	}
 
-			if (checkReserveDeadline(reserveDeadline)) {
-				if (!existing) {
-					participants.push(newParticipant)
-				} else if (decision === existing.decision) {
-					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
-					return
-				} else {
-					participants.splice(existingIndex, 1)
-					participants.push(newParticipant)
-				}
-			} else {
-				if (!existing) {
-					participants.push(newParticipant)
-				} else if (decision === existing.decision) {
-					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
-					return
-				} else if ((decision !== '–' && existing.decision === '–') || (decision === '–' && existing.decision !== '–')) {
-					participants.splice(existingIndex, 1)
-					participants.push(newParticipant)
-				} else if (existing.decision !== '–' && decision !== '–') {
-					participants[existingIndex].decision = decision
-				}
-			}
+		// 	const existingIndex = participants.findIndex(({ name }) => name === newParticipant.name)
+		// 	const existing = participants[existingIndex]
 
-			const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
+		// 	if (checkReserveDeadline(reserveDeadline)) {
+		// 		if (!existing) {
+		// 			participants.push(newParticipant)
+		// 		} else if (decision === existing.decision) {
+		// 			// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+		// 			return
+		// 		} else {
+		// 			participants.splice(existingIndex, 1)
+		// 			participants.push(newParticipant)
+		// 		}
+		// 	} else {
+		// 		if (!existing) {
+		// 			participants.push(newParticipant)
+		// 		} else if (decision === existing.decision) {
+		// 			// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+		// 			return
+		// 		} else if ((decision !== '–' && existing.decision === '–') || (decision === '–' && existing.decision !== '–')) {
+		// 			participants.splice(existingIndex, 1)
+		// 			participants.push(newParticipant)
+		// 		} else if (existing.decision !== '–' && decision !== '–') {
+		// 			participants[existingIndex].decision = decision
+		// 		}
+		// 	}
 
-			const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
+		// 	const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
 
-			await sendReply(ctx, updatedEvent, { top, reserve, refused })
-		}
+		// 	const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
+
+		// 	await sendReply(ctx, updatedEvent, { top, reserve, refused })
+		// }
+
+		//* cron
 
 		// if (!reserveDeadline) return
 
