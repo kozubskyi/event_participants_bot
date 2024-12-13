@@ -1,4 +1,4 @@
-const { CREATOR_USERNAME, CREATOR_CHAT_ID } = require('../helpers/constants')
+const { CREATOR_CHAT_ID } = require('../helpers/constants')
 
 module.exports = async function handleError({ ctx, err }) {
 	const chatId = ctx.chat?.id

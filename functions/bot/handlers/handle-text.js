@@ -1,6 +1,6 @@
 const { DateTime } = require('luxon')
-const { getName, getDate, checkReserveDeadline, prepareParticipants, sendReply } = require('../helpers/helpers')
-const { createEvent, getEvent, updateEvent, deleteEvent, getEvents } = require('../services/events-api')
+const { getName, getDate, prepareParticipants, sendReply } = require('../helpers/helpers')
+const { createEvent, getEvent, updateEvent } = require('../services/events-api')
 const sendInfoMessageToCreator = require('../helpers/send-info-message-to-creator')
 // const cron = require('node-cron')
 // const getCronExp = require('../helpers/get-cron-expression')

@@ -2,9 +2,6 @@ require('dotenv').config()
 const { Telegraf, Markup } = require('telegraf')
 const handlers = require('./handlers')
 const constants = require('./helpers/constants')
-const sendInfoMessageToCreator = require('./helpers/send-info-message-to-creator')
-const handleError = require('./handlers/handle-error')
-const { createEvent } = require('./services/events-api')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 

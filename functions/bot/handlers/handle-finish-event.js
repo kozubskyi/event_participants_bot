@@ -1,7 +1,6 @@
 const { getName, checkEventExistence } = require('../helpers/helpers')
 const { deleteEvent } = require('../services/events-api')
 const deleteMessage = require('../helpers/delete-message')
-const { CREATOR_USERNAME } = require('../helpers/constants')
 const handleError = require('./handle-error')
 
 module.exports = async function handleFinishEvent(ctx) {

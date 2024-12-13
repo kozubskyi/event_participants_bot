@@ -2,8 +2,6 @@ const {
 	checkEventExistence,
 	checkRegistrationTime,
 	getName,
-	checkReserveDeadline,
-	addFriend,
 	prepareParticipants,
 	sendReply,
 } = require('../helpers/helpers')
