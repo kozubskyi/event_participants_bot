@@ -1,11 +1,12 @@
 {
 	"name": "event_participants_bot",
-	"version": "1.6.3",
+	"version": "1.6.4",
 	"description": "",
 	"main": "functions/bot/bot.js",
 	"scripts": {
 		"start": "node functions/bot/bot.js",
-		"dev": "nodemon functions/bot/bot.js"
+		"dev": "nodemon functions/bot/bot.js",
+		"build": "netlify-lambda install && mkdir ./public"
 	},
 	"repository": {
 		"type": "git",
@@ -17,6 +18,7 @@
 		"axios": "^1.7.7",
 		"dotenv": "^16.4.5",
 		"luxon": "^3.5.0",
+		"netlify-lambda": "^2.0.16",
 		"node-cron": "^3.0.3",
 		"telegraf": "^4.16.3"
 	},

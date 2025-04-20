@@ -1,0 +1,7 @@
+Deploying a Telegram bot developed with Telegraf.js to Netlify
+https://blog.devgenius.io/deploying-a-telegram-bot-developed-with-telegraf-js-aef341ec0d4f
+
+Webhook
+We must now tell Telegram where to forward all the messages sent by users to the bot. To do this, we need to set up the webhook.
+Copy the URL below, replace <your_bot_token> and <your_site_name>, then paste the result in your browser address bar and navigate.
+https://api.telegram.org/bot<your_bot_token>/setWebhook?url=https://<your_site_name>.netlify.app/api/bot
