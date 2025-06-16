@@ -12,7 +12,7 @@ const constants = Object.freeze({
 	MINUS: '👎 не буду',
 
 	PLUS_FRIEND: '+ за друга',
-	PLUS_MINUS_FRIEND: '± за друга',
+	// PLUS_MINUS_FRIEND: '± за друга',
 	MINUS_FRIEND: '– за друга',
 
 	UPDATE: '🔄 Оновити',

@@ -1,13 +1,13 @@
 const { Markup } = require('telegraf')
 const { DateTime } = require('luxon')
 const { getEvent } = require('../services/events-api')
-const { PLUS_FRIEND, PLUS_MINUS_FRIEND } = require('./constants')
+const { PLUS_FRIEND } = require('./constants')
 const {
 	PLUS_BUTTON,
 	PLUS_MINUS_BUTTON,
 	MINUS_BUTTON,
 	PLUS_FRIEND_BUTTON,
-	PLUS_MINUS_FRIEND_BUTTON,
+	// PLUS_MINUS_FRIEND_BUTTON,
 	MINUS_FRIEND_BUTTON,
 	UPDATE_BUTTON,
 	SETTINGS_BUTTON,
@@ -82,7 +82,7 @@ const addFriend = (ctx, participants) => {
 
 	const decisions = {
 		[PLUS_FRIEND]: '+',
-		[PLUS_MINUS_FRIEND]: '±',
+		// [PLUS_MINUS_FRIEND]: '±',
 	}
 
 	const currentAddingFriend = {
@@ -211,7 +211,8 @@ ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n$
 
 	const buttons = Markup.inlineKeyboard([
 		[PLUS_BUTTON, PLUS_MINUS_BUTTON, MINUS_BUTTON],
-		[PLUS_FRIEND_BUTTON, PLUS_MINUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
+		// [PLUS_FRIEND_BUTTON, PLUS_MINUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
+		[PLUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
 		[UPDATE_BUTTON],
 		[FINISH_EVENT_BUTTON],
 	])

@@ -4,7 +4,7 @@ const {
 	PLUS_MINUS,
 	MINUS,
 	PLUS_FRIEND,
-	PLUS_MINUS_FRIEND,
+	// PLUS_MINUS_FRIEND,
 	MINUS_FRIEND,
 	UPDATE,
 	SETTINGS,
@@ -17,7 +17,7 @@ const buttons = Object.freeze({
 	MINUS_BUTTON: Markup.button.callback(MINUS, MINUS),
 
 	PLUS_FRIEND_BUTTON: Markup.button.callback(PLUS_FRIEND, PLUS_FRIEND),
-	PLUS_MINUS_FRIEND_BUTTON: Markup.button.callback(PLUS_MINUS_FRIEND, PLUS_MINUS_FRIEND),
+	// PLUS_MINUS_FRIEND_BUTTON: Markup.button.callback(PLUS_MINUS_FRIEND, PLUS_MINUS_FRIEND),
 	MINUS_FRIEND_BUTTON: Markup.button.callback(MINUS_FRIEND, MINUS_FRIEND),
 
 	UPDATE_BUTTON: Markup.button.callback(UPDATE, UPDATE),

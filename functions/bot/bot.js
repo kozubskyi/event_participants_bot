@@ -51,7 +51,7 @@ participantsMax: 15`)
 	bot.action(constants.MINUS, async ctx => await handlers.handleMinus(ctx))
 
 	bot.action(constants.PLUS_FRIEND, async ctx => await handlers.handlePlus(ctx))
-	bot.action(constants.PLUS_MINUS_FRIEND, async ctx => await handlers.handlePlusMinus(ctx))
+	// bot.action(constants.PLUS_MINUS_FRIEND, async ctx => await handlers.handlePlusMinus(ctx))
 	bot.action(constants.MINUS_FRIEND, async ctx => await handlers.handleMinus(ctx))
 
 	bot.action(constants.UPDATE, async ctx => await handlers.handleUpdate(ctx))

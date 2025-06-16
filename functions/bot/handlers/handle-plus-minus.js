@@ -7,7 +7,7 @@ const {
 	prepareParticipants,
 	sendReply,
 } = require('../helpers/helpers')
-const { PLUS_MINUS, PLUS_MINUS_FRIEND } = require('../helpers/constants')
+const { PLUS_MINUS } = require('../helpers/constants')
 const { updateEvent } = require('../services/events-api')
 const deleteMessage = require('../helpers/delete-message')
 const handleError = require('./handle-error')
@@ -54,9 +54,9 @@ module.exports = async function handlePlusMinus(ctx) {
 				}
 			}
 		}
-		if (data === PLUS_MINUS_FRIEND) {
-			participants = addFriend(ctx, participants)
-		}
+		// if (data === PLUS_MINUS_FRIEND) {
+		// 	participants = addFriend(ctx, participants)
+		// }
 
 		const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
 
