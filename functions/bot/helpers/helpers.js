@@ -11,7 +11,7 @@ const {
 	MINUS_FRIEND_BUTTON,
 	UPDATE_BUTTON,
 	SETTINGS_BUTTON,
-	FINISH_EVENT_BUTTON,
+	// FINISH_EVENT_BUTTON,
 } = require('./buttons')
 const deleteMessage = require('./delete-message')
 
@@ -214,7 +214,7 @@ ${top.length ? `${top.join('\n')}\n\n` : ''}${reserve.length ? `Резерв:\n$
 		// [PLUS_FRIEND_BUTTON, PLUS_MINUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
 		[PLUS_FRIEND_BUTTON, MINUS_FRIEND_BUTTON],
 		[UPDATE_BUTTON],
-		[FINISH_EVENT_BUTTON],
+		// [FINISH_EVENT_BUTTON],
 	])
 
 	await ctx.replyWithHTML(reply, buttons)
