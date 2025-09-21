@@ -56,7 +56,7 @@ participantsMax: 15`)
 
 	bot.action(constants.UPDATE, async ctx => await handlers.handleUpdate(ctx))
 	// bot.action(constants.SETTINGS, async ctx => await handlers.handleFinishEvent(ctx))
-	bot.action(constants.FINISH_EVENT, async ctx => await handlers.handleFinishEvent(ctx))
+	// bot.action(constants.FINISH_EVENT, async ctx => await handlers.handleFinishEvent(ctx))
 
 	console.log('✅ The bot is configured and must work correctly')
 }
