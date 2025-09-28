@@ -35,6 +35,7 @@ module.exports = async function handlePlusMinus(ctx) {
 			if (checkReserveDeadline(reserveDeadline)) {
 				if (existing && existing.decision === '±') {
 					// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+					await sendReply(ctx, event)
 					return
 				} else if (existing && existing.decision !== '±') {
 					participants.splice(index, 1)
