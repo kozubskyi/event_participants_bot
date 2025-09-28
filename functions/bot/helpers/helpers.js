@@ -200,7 +200,9 @@ ${description ? `Опис: ${description}\n` : ''}${location ? `Локація: 
 	}${participantsMax ? `\nМаксимум учасників: ${participantsMax}` : ''}`
 }
 
-const sendReply = async (ctx, event, { top = [], reserve = [], refused = [] }) => {
+const sendReply = async (ctx, event) => {
+	const { top, reserve, refused } = prepareParticipants(event, ctx)
+
 	const reply = `
 ${getHeader(event)}
 

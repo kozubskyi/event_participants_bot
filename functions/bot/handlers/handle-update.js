@@ -9,9 +9,7 @@ module.exports = async function handleUpdate(ctx) {
 
 		await deleteMessage(ctx)
 
-		const { top, reserve, refused } = prepareParticipants(event, ctx)
-
-		await sendReply(ctx, event, { top, reserve, refused })
+		await sendReply(ctx, event)
 	} catch (err) {
 		await handleError({ ctx, err })
 	}

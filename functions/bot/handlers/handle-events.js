@@ -8,11 +8,7 @@ module.exports = async function handleEvents(ctx) {
 
 		if (!events.length) return await ctx.reply('Активних подій немає')
 
-		events.forEach(async event => {
-			const { top, reserve, refused } = prepareParticipants(event, ctx)
-
-			await sendReply(ctx, event, { top, reserve, refused })
-		})
+		events.forEach(async event => await sendReply(ctx, event))
 	} catch (err) {
 		await handleError({ ctx, err })
 	}

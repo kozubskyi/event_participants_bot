@@ -11,10 +11,12 @@ const { MINUS, MINUS_FRIEND } = require('../helpers/constants')
 const handleError = require('./handle-error')
 
 module.exports = async function handleMinus(ctx) {
+	await deleteMessage(ctx)
+
 	try {
 		const event = await checkEventExistence(ctx)
 		if (!event) return
-		if (!(await checkRegistrationTime(ctx, event))) return
+		if (!(await checkRegistrationTime(ctx, event))) return await sendReply(ctx, event)
 
 		const { title, start, chatId, participantsMax, participants, reserveDeadline } = event
 		const userName = getName(ctx.from)
@@ -32,6 +34,7 @@ module.exports = async function handleMinus(ctx) {
 				participants.splice(index, 1)
 			} else if (existing?.decision === '–') {
 				// await ctx.replyWithHTML(`<b>${userName}</b>, ви вже є в списку.`)
+				await sendReply(ctx, event)
 				return
 			}
 			participants.push(currentParticipant)
@@ -41,63 +44,14 @@ module.exports = async function handleMinus(ctx) {
 				({ chatId, name }) => chatId === ctx.from.id && name.includes(`${userName} +`)
 			)
 
-			if (index < 0) return
+			if (index < 0) return await sendReply(ctx, event)
 
 			participants.splice(index, 1)
 		}
 
 		const updatedEvent = await updateEvent({ chatId, title, start }, { participants })
 
-		await deleteMessage(ctx)
-
-		// let top = []
-		// let reserve = []
-		// let refused = []
-
-		// if (checkReserveDeadline(reserveDeadline)) {
-		// 	top = participants.filter(({ decision }) => decision === '+').map(({ name }, i) => `${i + 1}. ${name}`)
-
-		// 	let reservePlus = []
-		// 	if (top.length > participantsMax) {
-		// 		reservePlus = top.splice(participantsMax || top.length)
-		// 	} else {
-		// 		for (let i = top.length; i < participantsMax; i++) {
-		// 			top.push(`${i + 1}.`)
-		// 		}
-		// 	}
-
-		// 	reserve = [
-		// 		...reservePlus,
-		// 		...participants
-		// 			.filter(({ decision }) => decision === '±')
-		// 			.map(({ name }, i) => `${top.length + reservePlus.length + i + 1}. ${name} ±`),
-		// 	]
-		// } else {
-		// 	const notMinusParticipants = participants
-		// 		.filter(({ decision }) => decision !== '–')
-		// 		.map(({ name, decision }, i) => `${i + 1}. ${name} ${decision === '±' ? '±' : ''}`)
-
-		// 	top = notMinusParticipants.slice(0, participantsMax || notMinusParticipants.length)
-		// 	for (let i = top.length; i < participantsMax; i++) {
-		// 		top.push(`${i + 1}.`)
-		// 	}
-
-		// 	reserve = notMinusParticipants.slice(participantsMax || notMinusParticipants.length)
-		// }
-
-		// refused = participants
-		// 	.filter(({ decision }) => decision === '–')
-		// 	.map((participant, i) => {
-		// 		// if (data === MINUS && JSON.stringify(currentParticipant) === JSON.stringify(participant)) {
-		// 		// 	return `<b>${participant.name} –</b>`
-		// 		// } else {
-		// 		return `${participant.name} –`
-		// 		// }
-		// 	})
-
-		const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
-
-		await sendReply(ctx, updatedEvent, { top, reserve, refused })
+		await sendReply(ctx, updatedEvent)
 	} catch (err) {
 		await handleError({ ctx, err })
 	}

@@ -86,12 +86,7 @@ module.exports = async function handleText(ctx) {
 
 			const createdEvent = await createEvent(event)
 
-			const top =
-				participantsMax || participantsMin
-					? Array.from({ length: participantsMax || participantsMin }, (el, i) => `${i + 1}.`)
-					: []
-
-			await sendReply(ctx, createdEvent, { top })
+			await sendReply(ctx, createdEvent)
 			await sendInfoMessageToCreator(ctx)
 		}
 
@@ -142,9 +137,7 @@ module.exports = async function handleText(ctx) {
 
 			const updatedEvent = await updateEvent(searchedEvent, fieldsToUpdate)
 
-			const { top, reserve, refused } = prepareParticipants(updatedEvent, ctx)
-
-			await sendReply(ctx, updatedEvent, { top, reserve, refused })
+			await sendReply(ctx, updatedEvent)
 		}
 
 		//* Adding by text
