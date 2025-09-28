@@ -13,9 +13,9 @@ const deleteMessage = require('../helpers/delete-message')
 const handleError = require('./handle-error')
 
 module.exports = async function handlePlusMinus(ctx) {
-	await deleteMessage(ctx)
-
 	try {
+		await deleteMessage(ctx)
+
 		const event = await checkEventExistence(ctx)
 		if (!event) return
 		if (!(await checkRegistrationTime(ctx, event))) return await sendReply(ctx, event)
